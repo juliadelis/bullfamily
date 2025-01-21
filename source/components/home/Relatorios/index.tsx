@@ -46,8 +46,8 @@ const RelatoriosConteudo = ({ botao }: Props) => {
           <h3 className="font-black  text-lg">Relatórios</h3>
         </div>
 
-        {Relatorio.map((relatorio) => (
-          <ul>
+        {Relatorio.map((relatorio, i) => (
+          <ul key={i}>
             <li className="relative pl-[32px]">
               <div className="max-w-3 w-3 h-1 max-h-1 min-w-3 min-h-1 rounded-3xl bg-black absolute left-0 top-[50%] translate-y-[-50%]"></div>
               <Link href={`${relatorio.link}`}>{relatorio.name}</Link>

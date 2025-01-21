@@ -68,8 +68,8 @@ const ImoveisVagosHome = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {estates?.map((item) => (
-                  <TableRow>
+                {estates?.map((item, i) => (
+                  <TableRow key={i}>
                     <TableCell className="font-medium">
                       {item.nickname}
                     </TableCell>

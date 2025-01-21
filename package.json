@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@radix-ui/react-tabs": "^1.0.4"
+    "@radix-ui/react-tabs": "^1.0.4",
+    "string-mask": "^0.3.0"
   }
 }

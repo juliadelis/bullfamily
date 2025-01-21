@@ -6,6 +6,8 @@ import RelatoriosConteudo from "@/components/home/Relatorios";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loading";
 import ImoveisVagosHome from "@/components/home/ImoveisVagos";
+import { Button, ButtonGroup } from "@mui/material";
+import MainTable from "@/components/home/MainTable";
 
 export default function Index() {
   const [loading, setloading] = useState(true);
@@ -21,14 +23,22 @@ export default function Index() {
   if (loading) return <Loading />;
   return (
     <div className="flex w-full">
-      <div className="flex flex-col md:flex-row w-[100vw] justify-between p-4  md:p-0">
-        <div className="flex flex-col items-start w-full md:w-[60%]  gap-5 md:p-10">
-          <UnidadesLocar />
-          <ImoveisIrregulares />
-          <ImoveisVagosHome />
-        </div>
-        <div className="flex rounded-lg w-[100%] md:rounded-none md:w-[40%] bg-[#F4F4F4] p-10">
-          <RelatoriosConteudo />
+      <div className="flex flex-col justify-between w-full">
+        <div className="py-2 px-4">
+          <ButtonGroup
+            size="small"
+            color={"inherit"}
+            variant="text"
+            aria-label="Basic button group">
+            <Button>Todos os imóveis</Button>
+            <Button>Imóveis vagos</Button>
+            <Button>Imóveis alugados</Button>
+            <Button>A Alugar</Button>
+            <Button>Proprietários</Button>
+            <Button>Contratos a vencer</Button>
+          </ButtonGroup>
+
+          <MainTable />
         </div>
       </div>
     </div>

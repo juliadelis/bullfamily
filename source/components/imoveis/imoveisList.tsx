@@ -23,7 +23,7 @@ const ImoveisList = ({ datas, openDeletePopUp }: ImovelDatasProps) => {
             <TableBody>
               <ScrollArea className="">
                 {datas.map((data, i) => (
-                  <TableRow>
+                  <TableRow key={i}>
                     <TableCell className="font-medium">{i + 1}</TableCell>
                     <TableCell className="font-bold">{data.nickname}</TableCell>
                     <TableCell className="text-right">

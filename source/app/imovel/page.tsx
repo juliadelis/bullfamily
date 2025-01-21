@@ -1,4 +1,5 @@
 "use client";
+
 import AddImovel from "@/components/imoveis/addImovel";
 import BuscarImovel from "@/components/imoveis/buscarImovel";
 import ImoveisList from "@/components/imoveis/imoveisList";
@@ -8,7 +9,6 @@ import { createClient } from "@/utils/supabase/client";
 import PopupDelete from "@/components/imoveis/PopupDelete/PopupDelete";
 
 import Loading from "@/components/loading";
-import { isAuthenticated } from "@/utils/isAuthenticated";
 import { redirect } from "next/navigation";
 
 export interface Estate {
@@ -46,67 +46,78 @@ export interface Estate {
 }
 
 export default function Imovel() {
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [estates, setEstates] = useState<Estate[] | null>(null);
+  const [deletePopUpOpened, setDeletePopUpOpened] = useState(false);
+  const [selectedEstate, setSelectedEstate] = useState<Estate | null>(null);
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) {
-      redirect("/login");
-    }
-    setloading(false);
+    const checkAuth = async () => {
+      const user = localStorage.getItem("user");
+      if (!user) {
+        redirect("/login");
+        return;
+      }
+      setLoading(false);
+    };
+    checkAuth();
   }, []);
 
-  const [estates, setEstates] = useState<Estate[] | null>();
-  const [deletePopUpOpened, setDeletePopUpOpened] = useState(false);
-  const [selectedEstate, setselectedEstate] = useState<Estate | null>(null);
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("estates")
-      .select("*")
-      .then(({ data, error }) => {
-        console.log(error);
+    const fetchEstates = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.from("estates").select("*");
 
-        if (!data) return;
+      if (error) {
+        console.error("Erro ao buscar imóveis:", error);
+        return;
+      }
 
+      if (data) {
         setEstates(data.sort((a: Estate, b: Estate) => a.id - b.id));
-      });
+      }
+    };
+
+    fetchEstates();
   }, []);
 
   const openDeletePopUp = (estate: Estate) => {
-    setselectedEstate(estate);
+    setSelectedEstate(estate);
     setDeletePopUpOpened(true);
   };
 
   const closeDeletePopUp = () => {
     setDeletePopUpOpened(false);
-    setselectedEstate(null);
+    setSelectedEstate(null);
   };
 
   const deleteEstate = async () => {
     const supabase = createClient();
     try {
       if (!selectedEstate) {
-        console.log("Não tem imovel selecionado");
+        console.log("Nenhum imóvel selecionado.");
         return;
       }
 
       const { error } = await supabase
         .from("estates")
         .delete()
-        .eq("id", String(selectedEstate.id));
+        .eq("id", selectedEstate.id);
 
       if (error) {
-        console.log({ error });
+        console.error("Erro ao deletar imóvel:", error);
         return;
       }
-      location.reload();
 
+      setEstates((prev) =>
+        prev ? prev.filter((estate) => estate.id !== selectedEstate.id) : null
+      );
       closeDeletePopUp();
     } catch (error) {
-      console.log(error);
+      console.error("Erro ao deletar imóvel:", error);
     }
   };
+
   if (loading) return <Loading />;
 
   if (!estates) {
@@ -115,10 +126,9 @@ export default function Imovel() {
 
   return (
     <div>
-      <div className="flex flex-col p-4 md:p-10 md:min-w-[100vw] absolute">
-        <div className="bg-white w-[90vw] md:w-[90vw] rounded-lg p-6">
+      <div className="flex flex-col p-4  absolute">
+        <div className="bg-white rounded-lg p-6">
           <BuscarImovel />
-
           <div className="mb-8 md:max-h-[60vh] rounded-md border overflow-y-scroll scroll-smooth">
             <ImoveisList openDeletePopUp={openDeletePopUp} datas={estates} />
           </div>

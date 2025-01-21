@@ -4,11 +4,11 @@ import { useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 
-interface Props{
-  onValueChange?: (...event: any[]) => void
+interface Props {
+  onValueChange?: (...event: any[]) => void;
 }
 
-const PasswordInput = ({onValueChange}:Props) => {
+const PasswordInput = ({ onValueChange }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -16,15 +16,15 @@ const PasswordInput = ({onValueChange}:Props) => {
   return (
     <div className="relative">
       <input
-        onChange={(e)=>{
+        onChange={(e) => {
           if (onValueChange) {
-            onValueChange(e)
+            onValueChange(e);
           }
         }}
-        className="rounded-md w-full px-4 py-4 bg-inherit border mb-8"
+        className="rounded-md w-full px-4 py-4 bg-inherit border mb-8 text-sm"
         type={showPassword ? "text" : "password"}
         name="password"
-        placeholder="••••••••"
+        placeholder="Senha"
         required></input>
       <button
         type="button"

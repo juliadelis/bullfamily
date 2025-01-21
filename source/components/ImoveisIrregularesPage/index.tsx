@@ -161,10 +161,10 @@ const ImoveisIrregularesComponent = () => {
           </TableRow>
         </TableHeader>
         <TableBody className="h-[40vh] overflow-scroll">
-          {lateEstates?.map((item) => {
+          {lateEstates?.map((item, i) => {
             if (!item?.estate) return;
             return (
-              <TableRow>
+              <TableRow key={i}>
                 <TableCell className="">
                   {capitalizeFirstLetter(String(item.year))}
                 </TableCell>

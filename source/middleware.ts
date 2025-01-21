@@ -5,7 +5,9 @@ import { cookies } from "next/headers";
 export async function middleware(request: NextRequest) {
   const cookieStore = cookies();
 
-  const userId = cookieStore.get("sb-bmgapzoqemdaotoievyp-auth-token")?.value;
+  const userId = (await cookieStore).get(
+    "sb-bmgapzoqemdaotoievyp-auth-token"
+  )?.value;
 
   if (userId) return;
 
