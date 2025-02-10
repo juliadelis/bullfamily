@@ -134,7 +134,7 @@ export const inputs = [
     description: "Telefone do administrador do imóvel",
   },
   {
-    name: "administratorEmail",
+    name: "admistratorEmail",
     label: "Email do Administrador",
     type: "email",
     placeholder: "email@dominio.com",
@@ -242,7 +242,7 @@ export const inputs = [
   {
     name: "lightInformation",
     label: "Informações da conta de Luz",
-    type: "price",
+    type: "text",
     placeholder: "Telefone, obs...",
     description: "Informações da conta de Água",
   },
@@ -294,6 +294,13 @@ export const inputs = [
     type: "text",
     placeholder: "Telefone, email...",
     description: "Dados do advogado",
+  },
+  {
+    name: "proprietary",
+    label: "Proprietário",
+    type: "text",
+    placeholder: "Nome do proprietário",
+    description: "Nome do proprietário",
   },
   {
     name: "beforePhoto",

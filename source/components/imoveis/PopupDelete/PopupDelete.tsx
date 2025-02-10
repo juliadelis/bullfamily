@@ -1,5 +1,6 @@
 "use client";
-import { Estate } from "@/app/imovel/page";
+import { Estate } from "@/@types/estate";
+import { EstateLike } from "@/app/imovel/page";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
@@ -7,7 +8,7 @@ import React from "react";
 export interface Props {
   Open?: boolean;
   closeDeletePopUp: () => void;
-  estate: null | Estate;
+  estate: null | EstateLike | Estate;
   deleteEstate: () => void;
 }
 
@@ -19,7 +20,7 @@ const PopupDelete = ({
 }: Props) => {
   return (
     <div
-      className={`absolute   w-[100vw] h-[100vh] bg-black bg-opacity-50 z-10 align-middle ${
+      className={`fixed top-0 left-0 w-[100vw] h-[100vh] bg-black bg-opacity-50 z-10 align-middle ${
         Open ? "flex " : "hidden"
       }`}>
       <div

@@ -21,7 +21,7 @@ export default function BuscarAno({ onSelected, value }: BuscarAnoProps) {
 
   return (
     <div className="flex flex-col gap-6 mb-6">
-      <div className="flex gap-10">
+      <div className="flex text-[12px]">
         <SelectYearManual
           label="Selecionar Ano"
           options={years}

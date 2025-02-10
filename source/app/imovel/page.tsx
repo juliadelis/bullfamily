@@ -10,8 +10,10 @@ import PopupDelete from "@/components/imoveis/PopupDelete/PopupDelete";
 import Loading from "@/components/loading";
 import { isAuthenticated } from "@/utils/isAuthenticated";
 import { redirect } from "next/navigation";
+import { registerAction } from "@/components/actionRegister";
+import { toast } from "@/components/ui/use-toast";
 
-export interface Estate {
+export interface EstateLike {
   id: number;
   status: string;
   nickname: string;
@@ -46,7 +48,10 @@ export interface Estate {
 }
 
 export default function Imovel() {
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [estates, setEstates] = useState<EstateLike[] | null>(null);
+  const [deletePopUpOpened, setDeletePopUpOpened] = useState(false);
+  const [selectedEstate, setSelectedEstate] = useState<EstateLike | null>(null);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -60,21 +65,28 @@ export default function Imovel() {
   const [deletePopUpOpened, setDeletePopUpOpened] = useState(false);
   const [selectedEstate, setselectedEstate] = useState<Estate | null>(null);
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("estates")
-      .select("*")
-      .then(({ data, error }) => {
-        console.log(error);
+    const fetchEstates = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.from("estates").select("*");
 
-        if (!data) return;
+      if (error) {
+        toast({
+          title: `Erro ao buscar imóveis: ${error}`,
+          variant: "destructive",
+        });
+        return;
+      }
 
-        setEstates(data.sort((a: Estate, b: Estate) => a.id - b.id));
-      });
+      if (data) {
+        setEstates(data.sort((a: EstateLike, b: EstateLike) => a.id - b.id));
+      }
+    };
+
+    fetchEstates();
   }, []);
 
-  const openDeletePopUp = (estate: Estate) => {
-    setselectedEstate(estate);
+  const openDeletePopUp = (estate: EstateLike) => {
+    setSelectedEstate(estate);
     setDeletePopUpOpened(true);
   };
 
@@ -83,28 +95,30 @@ export default function Imovel() {
     setselectedEstate(null);
   };
 
-  const deleteEstate = async () => {
-    const supabase = createClient();
-    try {
-      if (!selectedEstate) {
-        console.log("Não tem imovel selecionado");
-        return;
-      }
+  const requestDeleteEstate = async () => {
+    if (!selectedEstate) {
+      toast({ title: "Nenhum imóvel selecionado." });
+      return;
+    }
 
-      const { error } = await supabase
-        .from("estates")
-        .delete()
-        .eq("id", String(selectedEstate.id));
+    const user = localStorage.getItem("user");
+    if (!user) {
+      toast({ title: "Usuário não autenticado." });
+      return;
+    }
 
-      if (error) {
-        console.log({ error });
-        return;
-      }
-      location.reload();
+    const success = await registerAction(
+      user,
+      `Deletar imóvel ${selectedEstate.nickname}`,
+      "excluir",
+      { id: selectedEstate.id }
+    );
 
+    if (success) {
+      toast({ title: "Solicitação de exclusão registrada com sucesso." });
       closeDeletePopUp();
-    } catch (error) {
-      console.log(error);
+    } else {
+      console.error("Erro ao registrar solicitação de exclusão.");
     }
   };
   if (loading) return <Loading />;
@@ -128,7 +142,7 @@ export default function Imovel() {
         estate={selectedEstate}
         closeDeletePopUp={closeDeletePopUp}
         Open={deletePopUpOpened}
-        deleteEstate={deleteEstate}
+        deleteEstate={requestDeleteEstate}
       />
     </div>
   );

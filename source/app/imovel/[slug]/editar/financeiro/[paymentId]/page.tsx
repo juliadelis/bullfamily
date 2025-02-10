@@ -10,6 +10,7 @@ import { PaymentFormComponent } from "@/app/imovel/FinancialRecordForm/form";
 import { formSchema } from "@/app/imovel/FinancialRecordForm/formSchema";
 import { redirect } from "next/navigation";
 import Loading from "@/components/loading";
+import { registerAction } from "@/components/actionRegister";
 
 export default function EditPaymentPage({
   params,
@@ -17,6 +18,7 @@ export default function EditPaymentPage({
   params: { slug: string; paymentId: string };
 }) {
   const [loading, setloading] = useState(true);
+  const [userName, setUserName] = useState<any>(null);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -24,6 +26,27 @@ export default function EditPaymentPage({
       redirect("/login");
     }
     setloading(false);
+  }, []);
+
+  useEffect(() => {
+    const res = localStorage.getItem("user");
+    if (!res) {
+      redirect("/login");
+    }
+
+    const parsedUser = JSON.parse(res).data.user;
+
+    const client = createClient();
+
+    client
+      .from("profiles")
+      .select("*")
+      .eq("id", parsedUser.id)
+      .then(({ data }) => {
+        if (!data) return;
+        setUserName(data[0]);
+        setloading(false);
+      });
   }, []);
 
   const [payment, setPayment] = useState<FinancialRecord | null>(null);
@@ -77,67 +100,60 @@ export default function EditPaymentPage({
     propertyTaxIPTUPerson,
   }: z.infer<typeof formSchema>) {
     const client = createClient();
-    try {
-      const { error } = await client
-        .from("financialRecord")
-        .update([
-          {
-            month: payment?.month,
-            year: payment?.year,
-            observations,
-            propertyTaxIPTU,
-            gas,
-            enel,
-            rent,
-            sabesp,
-            condominium,
-            estateId: params.slug,
-            statusPropertyTaxIPTU,
-            statusRent,
-            statusCondominium,
-            statusExtraConstructions,
-            statusSabesp,
-            statusEnel,
-            statusGas,
-            extraStatus,
-            extra,
-            extraValue,
-            gasValue,
-            enelValue,
-            sabespValue,
-            condominiumValue,
-            rentValue,
-            propertyTaxIPTUValue,
-            rentPerson,
-            condominiumPerson,
-            sabespPerson,
-            enelPerson,
-            gasPerson,
-            extraPerson,
-            propertyTaxIPTUPerson,
-          },
-        ])
-        .select("*")
-        // @ts-ignore
-        .eq("id", Number(params.paymentId));
 
-      if (error) {
-        console.log({ error });
-        toast({
-          title: `Erro de atualização em pagamento`,
-          variant: "destructive",
-        });
-
-        return;
+    const success = await registerAction(
+      userName.name,
+      `Edilção de pagamento do imóvel de id ${params.slug}`,
+      "editar pagamento",
+      {
+        month: payment?.month,
+        year: payment?.year,
+        observations,
+        propertyTaxIPTU,
+        gas,
+        enel,
+        rent,
+        sabesp,
+        condominium,
+        estateId: params.slug,
+        statusPropertyTaxIPTU,
+        statusRent,
+        statusCondominium,
+        statusExtraConstructions,
+        statusSabesp,
+        statusEnel,
+        statusGas,
+        extraStatus,
+        extra,
+        extraValue,
+        gasValue,
+        enelValue,
+        sabespValue,
+        condominiumValue,
+        rentValue,
+        propertyTaxIPTUValue,
+        rentPerson,
+        condominiumPerson,
+        sabespPerson,
+        enelPerson,
+        gasPerson,
+        extraPerson,
+        propertyTaxIPTUPerson,
       }
+    );
 
+    if (success) {
       toast({
-        title: `Pagamento atualizado com sucesso!`,
+        title: "Solicitação de edição registrada com sucesso!",
+        description:
+          "O administrador revisará sua solicitação antes da alteração ser aplicada.",
       });
-
       window.location.href = `/imovel/${params?.slug}/`;
-    } catch (error) {
-      console.error(error);
+    } else {
+      toast({
+        title: "Erro ao registrar solicitação de edição",
+        variant: "destructive",
+      });
     }
   }
   if (loading) return <Loading />;

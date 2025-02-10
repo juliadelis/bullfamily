@@ -17,6 +17,7 @@ import { inputs } from "./fields";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FieldByType } from "@/components/imoveis/fieldByType";
 import { useEffect, useState } from "react";
+import { FormatterUtils } from "@/utils/formatter.utils";
 
 interface EstateFormProps {
   estate?: Estate;
@@ -25,6 +26,17 @@ interface EstateFormProps {
 
 export function EstateForm({ onSubmit, estate }: EstateFormProps) {
   const [fields, setFields] = useState(inputs);
+
+  const adjustDateForUTC = (dateString?: string | null) => {
+    if (!dateString) return null;
+    const localDate = new Date(dateString);
+    return isNaN(localDate.getTime())
+      ? null
+      : new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .split("T")[0];
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,11 +51,13 @@ export function EstateForm({ onSubmit, estate }: EstateFormProps) {
       elevator: estate?.elevator ? estate.elevator : false,
       garage: estate?.garage ? estate.garage : false,
       contractWith: estate?.contractWith ? estate.contractWith : "",
-      startDate: estate?.startDate ? new Date(estate.startDate) : new Date(0),
-      endDate: estate?.endDate ? new Date(estate.endDate) : new Date(0),
+      startDate: estate?.startDate
+        ? adjustDateForUTC(estate?.startDate)
+        : undefined,
+      endDate: estate?.endDate ? adjustDateForUTC(estate?.endDate) : undefined,
       unoccupied: estate?.unoccupied
-        ? new Date(estate.unoccupied)
-        : new Date(0),
+        ? adjustDateForUTC(estate?.unoccupied)
+        : undefined,
       readjustmentIndex: estate?.readjustmentIndex
         ? estate.readjustmentIndex
         : "",
@@ -51,9 +65,7 @@ export function EstateForm({ onSubmit, estate }: EstateFormProps) {
       admistratorPhoneNumber: estate?.admistratorPhoneNumber
         ? String(estate.admistratorPhoneNumber)
         : "",
-      administratorEmail: estate?.admistratorEmail
-        ? estate.admistratorEmail
-        : "",
+      admistratorEmail: estate?.admistratorEmail ? estate.admistratorEmail : "",
       administrateTax: estate?.administrateTax ? estate.administrateTax : "",
       lessee: estate?.lessee ? estate.lessee : "",
       lesseePhone: estate?.lesseePhone ? String(estate.lesseePhone) : "",
@@ -106,8 +118,8 @@ export function EstateForm({ onSubmit, estate }: EstateFormProps) {
     let updatedFields = [...inputs];
 
     const isStatusWithDate =
-      form.getValues("status") !== "Desocupado" &&
-      form.getValues("status") !== "Em construção" &&
+      form.getValues("status") !== "Ocioso" &&
+      form.getValues("status") !== "Demandas" &&
       form.getValues("status") !== "À venda" &&
       form.getValues("status") !== "Imóvel novo";
 
@@ -135,7 +147,7 @@ export function EstateForm({ onSubmit, estate }: EstateFormProps) {
       <ScrollArea className="">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className=" grid-cols-1 md:grid-cols-2 mb-8 ml-1  gap-x-8 gap-y-8 grid min-h-screen">
+          className="grid-cols-1 md:grid-cols-2 gap-4 grid min-h-screen">
           {fields.map(({ name, label, placeholder, type }) => {
             return (
               <FormField
@@ -162,8 +174,8 @@ export function EstateForm({ onSubmit, estate }: EstateFormProps) {
             );
           })}
         </form>
-        <Button onClick={form.handleSubmit(onSubmit)} className="w-[41%]">
-          Enviar
+        <Button className="mt-4" onClick={form.handleSubmit(onSubmit)}>
+          Salvar
         </Button>
       </ScrollArea>
     </FormComponent>

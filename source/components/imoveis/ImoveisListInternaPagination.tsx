@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { BsArrowRightCircle, BsArrowLeftCircle } from "react-icons/bs";
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 import { createClient } from "@/utils/supabase/client";
 
 export const ImoveisListInternaPagination = () => {
-  const [estates, setEstates] = useState<Estate[] | null>([]);
+  const [estates, setEstates] = useState<EstateLike[] | null>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const estatesPerPage = 4;
 
@@ -23,7 +23,7 @@ export const ImoveisListInternaPagination = () => {
 
         if (!data) return;
 
-        setEstates(data.sort((a: Estate, b: Estate) => a.id - b.id));
+        setEstates(data.sort((a: EstateLike, b: EstateLike) => a.id - b.id));
       });
   }, []);
 
@@ -57,8 +57,7 @@ export const ImoveisListInternaPagination = () => {
           disabled={currentPage === 0}
           className={`p-2 ${
             currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
+          }`}>
           <BsArrowLeftCircle />
         </button>
         <div className="flex flex-col gap-4 w-full">
@@ -68,8 +67,7 @@ export const ImoveisListInternaPagination = () => {
                 <p className="font-regular text-[11px]">{startIndex + i + 1}</p>
                 <Link
                   className="font-medium text-[11px]"
-                  href={`/imovel/${data.id}`}
-                >
+                  href={`/imovel/${data.id}`}>
                   {data.nickname}
                 </Link>
               </div>
@@ -85,8 +83,7 @@ export const ImoveisListInternaPagination = () => {
             (currentPage + 1) * estatesPerPage >= (estates?.length || 0)
               ? "opacity-50 cursor-not-allowed"
               : ""
-          }`}
-        >
+          }`}>
           <BsArrowRightCircle />
         </button>
       </div>

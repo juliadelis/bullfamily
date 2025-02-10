@@ -1,9 +1,8 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import ImovelTable from "@/components/imoveis/ImovelTable";
 import { Estate } from "@/@types/estate";
 import ImovelHistoryTable from "@/components/imoveis/ImovelHistoryTable copy";
@@ -21,6 +20,11 @@ import { z } from "zod";
 import { pendencyState } from "@/@types/PendencyState";
 import { HistoryFormComponent } from "@/app/imovel/HistoryForm/form";
 import { formSchemaHistory } from "@/app/imovel/HistoryForm/formSchema";
+import { isObserver } from "@/utils/isObserver";
+import { isEditestate } from "@/utils/isEditestate";
+import { isEdithistory } from "@/utils/isEdithistory";
+import { Button } from "@mui/material";
+import { LuPencil, LuPlus } from "react-icons/lu";
 
 type Props = {
   pendencies: pendencyState[];
@@ -46,6 +50,24 @@ export const EstateMobilLayout = ({
   payments,
   year,
 }: Props) => {
+  const [isObserverBoolean, setIsObserverBoolean] = useState<boolean>(false);
+  const [iseditestate, setIseditestate] = useState<boolean>(false);
+  const [isedithistory, setIsedithistory] = useState<boolean>(false);
+  useEffect(() => {
+    isObserver().then((data) => {
+      setIsObserverBoolean(Boolean(data));
+    });
+  }, []);
+  useEffect(() => {
+    isEditestate().then((data) => {
+      setIseditestate(Boolean(data));
+    });
+  }, []);
+  useEffect(() => {
+    isEdithistory().then((data) => {
+      setIsedithistory(Boolean(data));
+    });
+  }, []);
   return (
     <Tabs defaultValue="principal" className=" md:hidden">
       <TabsList>
@@ -56,11 +78,19 @@ export const EstateMobilLayout = ({
       <TabsContent value="principal">
         <div className="flex flex-col ">
           <ImovelTable {...estate} />
-          <div className="mt-4 ml-0">
-            <Button variant={"default"} asChild>
-              <Link href={`/imovel/${slug}/editar`}>Editar informações</Link>
-            </Button>
-          </div>
+          {isObserverBoolean || !iseditestate ? (
+            <></>
+          ) : (
+            <div className="mt-1 ml-0">
+              <Button
+                href={`/imovel/${slug}/editar`}
+                variant={"text"}
+                className="text-[12px] text-black normal-case underline"
+                startIcon={<LuPencil size={12} />}>
+                Editar informações
+              </Button>
+            </div>
+          )}
         </div>
       </TabsContent>
       <TabsContent value="pagamentos">
@@ -82,9 +112,17 @@ export const EstateMobilLayout = ({
           <ImovelHistoryTable data={estateHistory} />
           <div className="mt-4 ml-0">
             <Dialog>
-              <DialogTrigger>
-                <Button variant="blue">Adicionar histórico</Button>
-              </DialogTrigger>
+              {isObserverBoolean || !isedithistory ? (
+                <></>
+              ) : (
+                <DialogTrigger>
+                  <Button
+                    className="text-[12px] text-black normal-case underline"
+                    startIcon={<LuPlus size={12} />}>
+                    Adicionar histórico
+                  </Button>
+                </DialogTrigger>
+              )}
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle className="mb-8">

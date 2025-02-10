@@ -9,7 +9,7 @@ const defaultUrl = process.env.VERCEL_URL
 // };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-background text-foreground">
+    <div className="text-foreground bg-[#E7E8E2]">
       <main className="min-h-screen ">{children}</main>
     </div>
   );

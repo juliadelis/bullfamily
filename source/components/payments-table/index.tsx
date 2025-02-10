@@ -10,13 +10,16 @@ import {
   TableRow,
 } from "../ui/table";
 import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
-import { Button } from "../ui/button";
+
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { Estate } from "@/@types/estate";
 import { pendencyState } from "@/@types/PendencyState";
 import { isObserver } from "@/utils/isObserver";
+import { Button, IconButton } from "@mui/material";
+import { LuPencil } from "react-icons/lu";
+import { isEditpayments } from "@/utils/isEditpayments";
 
 export interface FinancialRecord {
   id: number;
@@ -71,9 +74,16 @@ export const PaymentTable = (props: Props) => {
   const { data, year, estate } = props;
   const { id: estateId } = estate;
   const [isObserverBoolean, setIsObserverBoolean] = useState<boolean>(false);
+  const [iseditpayments, setIseditpayments] = useState<boolean>(false);
   useEffect(() => {
     isObserver().then((data) => {
       setIsObserverBoolean(Boolean(data));
+    });
+  }, []);
+
+  useEffect(() => {
+    isEditpayments().then((data) => {
+      setIseditpayments(Boolean(data));
     });
   }, []);
 
@@ -152,20 +162,20 @@ export const PaymentTable = (props: Props) => {
   }, [data]);
 
   return (
-    <div className="border rounded-md bg-white  ">
-      <div className="flex items-center  justify-between [#F1F5F9] px-4 py-[0.75rem]  rounded-t-md border-b">
-        <button onClick={props.lastYear}>
-          <ArrowLeftIcon width={20} height={20} />
-        </button>
-        <p className="text-[#334155] text-md font-semibold">{year}</p>
-        <button onClick={props.nextYear}>
-          <ArrowRightIcon width={20} height={20} />
-        </button>
+    <div className="border bg-white  ">
+      <div className="flex items-center  justify-between [#F1F5F9] px-4   border-b">
+        <IconButton onClick={props.lastYear}>
+          <ArrowLeftIcon width={14} height={14} />
+        </IconButton>
+        <p className="text-[#334155] text-[12px] font-semibold">{year}</p>
+        <IconButton onClick={props.nextYear}>
+          <ArrowRightIcon width={14} height={14} />
+        </IconButton>
       </div>
 
-      <ScrollArea className="md:w-[56vw] w-full   whitespace-nowrap h-[35vh] ">
+      <ScrollArea className="w-full  ">
         <Table>
-          <ScrollArea className="h-[70vh] w-full">
+          <ScrollArea className="w-full">
             <TableHeader>
               <TableRow>
                 <TableHead>Mês</TableHead>
@@ -177,13 +187,17 @@ export const PaymentTable = (props: Props) => {
                 <TableHead>Gás</TableHead>
                 <TableHead>Extra</TableHead>
                 <TableHead className="w-[200px]">Obs</TableHead>
-                {isObserverBoolean ? <></> : <TableHead>Ações</TableHead>}
+                {isObserverBoolean || !iseditpayments ? (
+                  <></>
+                ) : (
+                  <TableHead>Ações</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {formatedData.map((monthData) => {
+              {formatedData.map((monthData, i) => {
                 return (
-                  <TableRow>
+                  <TableRow key={i}>
                     <TableCell>{monthData.monthLabel}</TableCell>
                     <TableCell
                       className={`font-semibold 
@@ -196,7 +210,7 @@ export const PaymentTable = (props: Props) => {
                             ? "text-[#1B972F]"
                             : ""
                         }`}>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1 text-[11px] ">
                         {monthData.propertyTaxIPTU &&
                           formatDate(monthData.propertyTaxIPTU)}
                         {monthData.propertyTaxIPTUValue && (
@@ -245,7 +259,7 @@ export const PaymentTable = (props: Props) => {
                           ? "text-[#1B972F]"
                           : ""
                       }`}>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1 text-[11px]">
                         {monthData.rentValue && (
                           <div
                             className={` ${
@@ -263,9 +277,9 @@ export const PaymentTable = (props: Props) => {
                         )}
                         <div>
                           {monthData.rent && formatDate(monthData.rent)}
-                          {monthData.pendenciesForMonth?.map((pendency) => {
+                          {monthData.pendenciesForMonth?.map((pendency, i) => {
                             return (
-                              <span className="text-black pl-2">
+                              <span key={i} className="text-black pl-1">
                                 {pendency.pendency_acronym}
                               </span>
                             );
@@ -297,7 +311,7 @@ export const PaymentTable = (props: Props) => {
                           ? "text-[#1B972F]"
                           : ""
                       }`}>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1 text-[11px]">
                         {monthData.condominium &&
                           formatDate(monthData.condominium)}
 
@@ -344,7 +358,7 @@ export const PaymentTable = (props: Props) => {
                           ? "text-[#1B972F]"
                           : ""
                       }`}>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1 text-[11px]">
                         {monthData.sabesp ? formatDate(monthData.sabesp) : null}
 
                         {monthData.sabespValue && (
@@ -388,7 +402,7 @@ export const PaymentTable = (props: Props) => {
                           ? "text-[#1B972F]"
                           : ""
                       }`}>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1 text-[11px]">
                         {monthData.enel && formatDate(monthData.enel)}
 
                         {monthData.enelValue && (
@@ -432,7 +446,7 @@ export const PaymentTable = (props: Props) => {
                           ? "text-[#1B972F]"
                           : ""
                       }`}>
-                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-1 text-[11px]">
                         {monthData.gas && formatDate(monthData.gas)}
                         {monthData.gasValue && (
                           <div
@@ -475,7 +489,7 @@ export const PaymentTable = (props: Props) => {
                           ? "text-[#1B972F]"
                           : ""
                       }`}>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1 text-[11px]">
                         {monthData.extra && formatDate(monthData.extra)}
                         {monthData.extraValue && (
                           <div
@@ -512,18 +526,22 @@ export const PaymentTable = (props: Props) => {
                     </TableCell>
                     <TableCell>{monthData.observations}</TableCell>
 
-                    {isObserverBoolean ? (
+                    {isObserverBoolean || !iseditpayments ? (
                       <></>
                     ) : (
                       <TableCell className="gap-[30px]">
-                        <Link
+                        <Button
+                          size="small"
+                          type="text"
+                          className="text-[12px] underline text-black normal-case"
                           href={
                             monthData.estateId && monthData.id
                               ? `/imovel/${monthData.estateId}/editar/financeiro/${monthData.id}`
                               : `/imovel/${estateId}/criar/financeiro?month=${monthData.month}&year=${year}`
-                          }>
-                          <Button>Editar</Button>
-                        </Link>
+                          }
+                          startIcon={<LuPencil size={12} />}>
+                          Editar
+                        </Button>
                       </TableCell>
                     )}
                   </TableRow>

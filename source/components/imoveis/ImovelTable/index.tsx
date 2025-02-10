@@ -12,7 +12,9 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 import { getCldOgImageUrl } from "next-cloudinary";
-import { getURL } from "next/dist/shared/lib/utils";
+import "./index.css";
+import { FormatterUtils } from "@/utils/formatter.utils";
+
 const ImovelTable = (data: Estate) => {
   const getUrl = (id: string) => {
     if (!id) {
@@ -23,41 +25,59 @@ const ImovelTable = (data: Estate) => {
     });
   };
 
+  const adjustDateForUTC = (dateString?: string) => {
+    if (!dateString) return null;
+    const localDate = new Date(dateString);
+    const utcDate = new Date(
+      localDate.getTime() + localDate.getTimezoneOffset() * 60000
+    );
+
+    return FormatterUtils.formatDate(utcDate);
+  };
+
   return (
-    <Table className="bg-white rounded-md">
+    <Table className="bg-white border">
       <TableBody>
-        <ScrollArea className="h-[70vh] md:w-[35vw] w-full rounded-md border">
+        <ScrollArea className="w-full">
           <TableRow>
             <TableHead className="font-[600]">Apelido</TableHead>
-            <TableCell className="font-medium text-lg">
+            <TableCell className="font-medium text-[12px] lowercase">
               {data.nickname}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Matrícula</TableHead>
-            <TableCell className="font-medium">{data.registration}</TableCell>
+            <TableCell className="font-medium lowercase">
+              {data.registration}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Escritura</TableHead>
-            <TableCell className="font-medium">{data.scripture}</TableCell>
+            <TableCell className="font-medium lowercase">
+              {data.scripture}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Certidão de Registro</TableHead>
-            <TableCell className="font-medium">
+            <TableCell className="font-medium lowercase">
               {data.registrationCertification}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Status</TableHead>
-            <TableCell className="font-medium">{data.status}</TableCell>
+            <TableCell className="font-medium lowercase">
+              {data.status}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Endereço</TableHead>
-            <TableCell className="font-[300]">{data.address}</TableCell>
+            <TableCell className="font-[300] lowercase">
+              {data.address}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Tipo</TableHead>
-            <TableCell className="font-medium">{data.type}</TableCell>
+            <TableCell className="font-medium lowercase">{data.type}</TableCell>
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Data de pagamento</TableHead>
@@ -67,7 +87,7 @@ const ImovelTable = (data: Estate) => {
           </TableRow>
           <TableRow>
             <TableHead className="font-[600]">Local de Pagamento</TableHead>
-            <TableCell className="font-medium">
+            <TableCell className="font-medium lowercase">
               {data.paymentLocation}
             </TableCell>
           </TableRow>
@@ -81,10 +101,7 @@ const ImovelTable = (data: Estate) => {
             <TableRow>
               <TableHead className="font-[600]">Desocupado desde</TableHead>
               <TableCell className="font-medium">
-                {String(format(data.unoccupied, "PPP", { locale: ptBR })) !==
-                "31 de dezembro de 1969"
-                  ? String(format(data.unoccupied, "PPP", { locale: ptBR }))
-                  : ""}
+                {adjustDateForUTC(data.unoccupied?.toString())}
               </TableCell>
             </TableRow>
           ) : (
@@ -122,19 +139,13 @@ const ImovelTable = (data: Estate) => {
               <TableRow>
                 <TableHead className="font-[600]">Data de início</TableHead>
                 <TableCell className="font-medium">
-                  {String(format(data.startDate, "PPP", { locale: ptBR })) !==
-                  "31 de dezembro de 1969"
-                    ? String(format(data.startDate, "PPP", { locale: ptBR }))
-                    : ""}
+                  {adjustDateForUTC(data.startDate?.toString())}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableHead className="font-[600]">Data de térmimo</TableHead>
                 <TableCell className="font-medium">
-                  {String(format(data.endDate, "PPP", { locale: ptBR })) !==
-                  "31 de dezembro de 1969"
-                    ? String(format(data.endDate, "PPP", { locale: ptBR }))
-                    : ""}
+                  {adjustDateForUTC(data.endDate?.toString())}
                 </TableCell>
               </TableRow>
             </>
@@ -270,7 +281,9 @@ const ImovelTable = (data: Estate) => {
               {!data.beforePhoto ? (
                 ""
               ) : (
-                <a href={`${getUrl(data.beforePhoto)}`}>Link</a>
+                <a target="_blank" href={`${getUrl(data.beforePhoto)}`}>
+                  Link
+                </a>
               )}
             </TableCell>
           </TableRow>
@@ -282,7 +295,9 @@ const ImovelTable = (data: Estate) => {
               {!data.afterPhoto ? (
                 ""
               ) : (
-                <a href={`${getUrl(data.afterPhoto)}`}>Link</a>
+                <a target="_blank" href={`${getUrl(data.afterPhoto)}`}>
+                  Link
+                </a>
               )}
             </TableCell>
           </TableRow>
@@ -294,7 +309,9 @@ const ImovelTable = (data: Estate) => {
           </TableRow>
           <TableRow>
             <TableHead className="font-[600] ">Obs</TableHead>
-            <TableCell className="font-medium">{data.observation}</TableCell>
+            <TableCell className="font-medium lowercase">
+              {data.observation}
+            </TableCell>
           </TableRow>
         </ScrollArea>
       </TableBody>

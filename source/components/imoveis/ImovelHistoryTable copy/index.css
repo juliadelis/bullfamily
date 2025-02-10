@@ -1,0 +1,13 @@
+.table-bordered {
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc; /* Define a borda lateral esquerda */
+  border-right: 1px solid #ccc; /* Define a borda lateral direita */
+  border-collapse: collapse; /* Garante que a borda fique uniforme */
+}
+
+.table-bordered th,
+.table-bordered td {
+  border-left: 1px solid #ccc; /* Borda nas células, opcional */
+  border-right: 1px solid #ccc;
+  border-collapse: collapse;
+}

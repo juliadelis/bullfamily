@@ -14,11 +14,11 @@ export const SelectManual = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <label>
         <select
-          className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
+          ref={ref}
+          className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-[12px] shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
           {...props}
           onChange={onChange}
-          defaultValue={""}
-        >
+          defaultValue={""}>
           {value === "" && (
             <option value="" disabled style={{ display: "none" }}>
               Selecione um imóvel
@@ -48,11 +48,11 @@ export const SelectMesManual = forwardRef<HTMLSelectElement, SelectMesProps>(
     return (
       <label>
         <select
-          className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
+          ref={ref}
+          className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-[12px] shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
           {...props}
           onChange={onChange}
-          defaultValue={new Date().getMonth() + 1}
-        >
+          defaultValue={new Date().getMonth() + 1}>
           <option value="" disabled style={{ display: "none" }}>
             Selecione um Mês
           </option>
@@ -82,11 +82,10 @@ export const SelectYearManual = ({
   return (
     <label>
       <select
-        className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
+        className="flex h-fit items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-[12px] shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
         {...props}
         onChange={onChange}
-        defaultValue={new Date().getFullYear()}
-      >
+        defaultValue={new Date().getFullYear()}>
         <option value="" disabled style={{ display: "none" }}>
           Selecione um Ano
         </option>

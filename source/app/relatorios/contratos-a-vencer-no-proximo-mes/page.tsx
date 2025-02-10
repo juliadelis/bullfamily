@@ -16,7 +16,7 @@ import { createClient } from "@/utils/supabase/client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 import { differenceInDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Loading from "@/components/loading";
@@ -25,7 +25,7 @@ import { redirect } from "next/navigation";
 
 export default function ItensMesRelatorio() {
   const [loading, setloading] = useState(true);
-  const [estates, setEstates] = useState<Estate[] | null>();
+  const [estates, setEstates] = useState<EstateLike[] | null>();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -47,7 +47,7 @@ export default function ItensMesRelatorio() {
         const eighteenMonthsAhead = new Date();
         eighteenMonthsAhead.setMonth(eighteenMonthsAhead.getMonth() + 18);
 
-        const filteredEstates = data.filter((estate: Estate) => {
+        const filteredEstates = data.filter((estate: EstateLike) => {
           //@ts-ignore
           const endDate = new Date(estate.endDate);
           return endDate >= new Date() && endDate <= eighteenMonthsAhead;

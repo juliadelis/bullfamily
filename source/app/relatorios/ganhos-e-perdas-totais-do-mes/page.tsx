@@ -25,6 +25,8 @@ import BuscarAno from "@/components/imoveis/buscarAno";
 import Loading from "@/components/loading";
 import { isAuthenticated } from "@/utils/isAuthenticated";
 import { redirect } from "next/navigation";
+import "./index.css";
+
 type FinancialRecorMoreEstate = FinancialRecord & {
   estate: Estate | undefined;
 };
@@ -106,8 +108,8 @@ export default function PagementosAlguelImoveis() {
 
   const expectedTotalPayment = filteredEstates?.reduce(
     (total, estateMoreFinancials) => {
-      if (!estateMoreFinancials?.estate) return total + 0;
-      return total + estateMoreFinancials.estate.rentValue;
+      if (!estateMoreFinancials?.estate?.rentValue) return total;
+      return total + Number(estateMoreFinancials.estate.rentValue);
     },
     0
   );
@@ -115,14 +117,17 @@ export default function PagementosAlguelImoveis() {
   const recievedTotalPayment = filteredEstates?.reduce(
     (total, estateMoreFinancials) => {
       if (
-        !estateMoreFinancials?.estate ||
+        !estateMoreFinancials?.estate?.rentValue ||
         estateMoreFinancials?.statusRent === "Não foi pago"
       )
-        return total + 0;
-      return total + estateMoreFinancials.rentValue;
+        return total;
+      return total + Number(estateMoreFinancials.rentValue || 0);
     },
     0
   );
+
+  const totalLosses =
+    Number(expectedTotalPayment || 0) - Number(recievedTotalPayment || 0);
 
   useEffect(() => {
     const filteredLate = payments?.map((payment) => {
@@ -148,26 +153,20 @@ export default function PagementosAlguelImoveis() {
 
   return (
     <div>
-      <div className="flex flex-col p-4 md:p-10 overflow-y-scroll w-[100vw]">
-        <div className="bg-white rounded-lg p-6">
-          <div className="flex mb-[60px] ">
-            <Link href="/relatorios" className="flex items-center">
-              <IoArrowBackCircleOutline className="mr-2 h-6 w-6" />
-              <h3 className="text-lg">Voltar ao painel de relatórios</h3>
-            </Link>
-          </div>
-          <div className="flex flex-col gap-4 md:gap-8">
+      <div className="flex flex-col p-4 ">
+        <div>
+          <div className="flex flex-col gap-2">
             <div className="flex mb-4">
-              <LuFileText className="mr-2 h-6 w-6" />
-              <h3 className="font-black  text-lg">
-                Ganhos e perdas totais do mês
-              </h3>
+              <LuFileText className="mr-2 h-4 w-4" />
+              <h3 className="font-semibold  text-[12px]">Receita prevista</h3>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-              <div className="flex flex-wrap gap-2 md:gap-4">
-                <h3 className="font-black  text-lg">Selecione o Mês: </h3>
-                <p className="text-lg">
+              <div className="flex flex-col flex-wrap gap-2 ">
+                <h3 className="font-semibold  text-[12px]">
+                  Selecione o Mês:{" "}
+                </h3>
+                <p className="text-[12px]">
                   <BuscarMes
                     value={selectedMonth}
                     onSelected={(month) => {
@@ -176,9 +175,11 @@ export default function PagementosAlguelImoveis() {
                   />
                 </p>
               </div>
-              <div className="flex gap-2 flex-wrap md:gap-4">
-                <h3 className="font-black  text-lg">Selecione o Ano: </h3>
-                <p className="text-lg">
+              <div className="flex flex-col gap-2 flex-wrap ">
+                <h3 className="font-semibold  text-[12px]">
+                  Selecione o Ano:{" "}
+                </h3>
+                <p className="text-[12px]">
                   <BuscarAno
                     value={selectedYear}
                     onSelected={(year) => {
@@ -189,48 +190,66 @@ export default function PagementosAlguelImoveis() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-10">
-              <div className="flex gap-4">
-                <h3 className="text-lg">Ganhos esperados totais:</h3>{" "}
-                <p className="text-lg">R$ {expectedTotalPayment} </p>
-              </div>
-              <div className="flex gap-4">
-                <h3 className="text-lg">Ganhos recebidos totais:</h3>{" "}
-                <p className="text-lg">R$ {recievedTotalPayment} </p>
-              </div>
-              <div className="flex gap-4">
-                <h3 className="text-lg">Perdas totais:</h3>{" "}
-                <p className="text-lg">
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex gap-2">
+                <h3 className="text-[12px]">Ganhos esperados totais:</h3>
+                <p className="text-[12px] font-semibold">
                   R${" "}
-                  {Number(expectedTotalPayment) - Number(recievedTotalPayment)}
+                  {expectedTotalPayment?.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  }) || "0,00"}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <h3 className="text-[12px]">Ganhos recebidos totais:</h3>
+                <p className="text-[12px] font-semibold">
+                  R${" "}
+                  {recievedTotalPayment?.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  }) || "0,00"}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <h3 className="text-[12px]">Perdas totais:</h3>
+                <p className="text-[12px] font-semibold">
+                  R$
+                  {totalLosses.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  })}
                 </p>
               </div>
             </div>
 
-            <div className="flex rounded-md border w-[80vw] md:w-[90vw] min-h-[30vh] ">
-              <Table>
+            <div>
+              <Table className="w-full overflow-auto table-bordered">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="font-black w-[400px]">
+                    <TableHead className="font-normal text-black w-[400px]">
                       Imóvel
                     </TableHead>
-                    <TableHead className="font-black ">
+                    <TableHead className="font-normal text-black">
+                      Proprietário
+                    </TableHead>
+                    <TableHead className="font-normal text-black ">
                       Ganhos esperados
                     </TableHead>
-                    <TableHead className="font-black ">
+                    <TableHead className="font-normal text-black ">
                       Ganhos recebidos
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className=" overflow-scroll">
-                  {filteredEstates?.map((item) => {
+                  {filteredEstates?.map((item, i) => {
                     if (!item?.estate) return;
                     return (
-                      <TableRow>
+                      <TableRow key={i}>
                         <TableCell className="font-bold">
                           <Link href={`/imovel/${item?.estate.id}`}>
-                            {item?.estate.nickname}
+                            {item?.estate?.nickname}
                           </Link>
+                        </TableCell>
+                        <TableCell className="font-bold">
+                          {item?.estate?.proprietary}
                         </TableCell>
                         <TableCell className="">
                           R$ {item.estate.rentValue}

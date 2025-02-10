@@ -1,21 +1,26 @@
 "use client";
-import BackButton from "@/components/back-button";
 import { createClient } from "@/utils/supabase/client";
 import { z } from "zod";
 import { formSchema } from "../../formSchema";
 import { Form } from "../../form";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { use, useEffect, useState } from "react";
+
 import { useToast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import Loading from "@/components/loading";
+import { Button } from "@mui/material";
 
 export default function EditarUsuario({
-  params: { uid },
+  params,
 }: {
-  params: { uid: string };
+  params: Promise<{ uid: string }>;
 }) {
+  const { uid } = use(params);
+
   const [loading, setloading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const { toast } = useToast();
+  const { replace, refresh } = useRouter();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -24,11 +29,9 @@ export default function EditarUsuario({
     }
     setloading(false);
   }, []);
-  const [user, setUser] = useState<any>("");
-  const { toast } = useToast();
-  const { replace, refresh } = useRouter();
 
   useEffect(() => {
+    if (!uid) return;
     const client = createClient();
     client
       .from("profiles")
@@ -39,12 +42,20 @@ export default function EditarUsuario({
           setUser(data[0]);
         }
       });
-  }, []);
+  }, [uid]);
 
   async function onSubmit({
     email,
     name,
-    isObserver,
+    isobserver,
+    isadmin,
+    personalized,
+    addestate,
+    editestate,
+    deleteestate,
+    editpayments,
+    edithistory,
+    delethistory,
   }: z.infer<typeof formSchema>) {
     const client = createClient();
     try {
@@ -56,16 +67,96 @@ export default function EditarUsuario({
 
       const { error: errorObserver } = await client.rpc("update_is_observer", {
         user_id: uid,
-        new_isobserver: isObserver,
+        new_isobserver: isobserver,
       });
 
-      if (error || errorObserver) {
-        console.log({ errorObserver });
-        toast({
-          title: `Erro de atualização de usuário`,
-          variant: "destructive",
+      const { error: errorAdmin } = await client.rpc("update_is_admin", {
+        user_id: uid,
+        new_isadmin: isadmin,
+      });
+
+      const { error: errorPersonalized } = await client.rpc(
+        "update_personalized",
+        {
+          user_id: uid,
+          new_personalized: personalized,
+        }
+      );
+
+      const { error: errorAddEstate } = await client.rpc("update_add_estate", {
+        user_id: uid,
+        new_addestate: addestate,
+      });
+
+      const { error: errorEditEstate } = await client.rpc(
+        "update_edit_estate",
+        {
+          user_id: uid,
+          new_editestate: editestate,
+        }
+      );
+
+      const { error: errorDeleteEstate } = await client.rpc(
+        "update_delete_estate",
+        {
+          user_id: uid,
+          new_deleteestate: deleteestate,
+        }
+      );
+
+      const { error: errorEditPayments } = await client.rpc(
+        "update_edit_payments",
+        {
+          user_id: uid,
+          new_editpayments: editpayments,
+        }
+      );
+
+      const { error: errorEditHistory } = await client.rpc(
+        "update_edit_history",
+        {
+          user_id: uid,
+          new_edithistory: edithistory,
+        }
+      );
+
+      const { error: errorDeleteHistory } = await client.rpc(
+        "update_delete_history",
+        {
+          user_id: uid,
+          new_delethistory: delethistory,
+        }
+      );
+
+      if (
+        error ||
+        errorObserver ||
+        errorAdmin ||
+        errorPersonalized ||
+        errorAddEstate ||
+        errorEditEstate ||
+        errorDeleteEstate ||
+        errorEditPayments ||
+        errorEditHistory ||
+        errorDeleteHistory
+      ) {
+        console.error({
+          error,
+          errorObserver,
+          errorAdmin,
+          errorPersonalized,
+          errorAddEstate,
+          errorEditEstate,
+          errorDeleteEstate,
+          errorEditPayments,
+          errorEditHistory,
+          errorDeleteHistory,
         });
 
+        toast({
+          title: "Erro de atualização de usuário",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -86,14 +177,15 @@ export default function EditarUsuario({
   if (loading) return <Loading />;
   if (!user) return;
   return (
-    <div className="w-full flex flex-col gap-16 p-4 md:p-16">
-      <div className="bg-white p-6 rounded-lg">
-        <BackButton />
+    <div className="w-full flex flex-col gap-4 p-4 ">
+      <div className="bg-white  rounded-lg">
         {user && (
-          <div className="w-1/2">
+          <div>
             <Form onSubmit={onSubmit} user={user} />
             <div className="my-8">
-              <Button onClick={changePasswordEmail}>
+              <Button
+                className="bg-black text-white normal-case"
+                onClick={changePasswordEmail}>
                 Enviar email para usuário alterar a senha
               </Button>
             </div>

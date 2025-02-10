@@ -33,6 +33,8 @@ import BuscarAno from "@/components/imoveis/buscarAno";
 import Loading from "@/components/loading";
 import { isAuthenticated } from "@/utils/isAuthenticated";
 import { redirect } from "next/navigation";
+import "./index.css";
+import { FormatterUtils } from "@/utils/formatter.utils";
 
 function capitalizeFirstLetter(str: string) {
   return str.replace(/\b\w/g, (char: string) => char.toUpperCase());
@@ -125,28 +127,22 @@ export default function ItensMesRelatorio() {
 
   return (
     <div>
-      <div className="flex flex-col p-4 md:p-10">
-        <div className="bg-white p-6 rounded-lg">
-          <div className=" flex mb-[60px] ">
-            <Link href="/relatorios" className="flex items-center">
-              <IoArrowBackCircleOutline className="mr-2 h-6 w-6" />
-              <h3 className="text-lg flex-wrap">
-                Voltar ao painel de relatórios
-              </h3>
-            </Link>
-          </div>
-          <div className="flex flex-col gap-8">
+      <div className="flex flex-col p-4 ">
+        <div className="bg-white rounded-lg">
+          <div className="flex flex-col gap-2">
             <div className="flex mb-4">
-              <LuFileText className="mr-2 h-6 w-6" />
-              <h3 className="font-black  text-lg">
+              <LuFileText className="mr-2 h-4 w-4" />
+              <h3 className=" font-semibold  text-[12px]">
                 Itens gerais de pagamento feitos no mês em curso
               </h3>
             </div>
 
-            <div className="flex md:gap-8 gap-1 flex-wrap">
-              <div className="flex flex-wrap md:gap-4 gap-2">
-                <h3 className="font-black  text-lg">Selecione o Mês: </h3>
-                <p className="text-lg">
+            <div className="flex md:gap-4 gap-1 flex-wrap">
+              <div className="flex flex-wrap flex-col gap-2">
+                <h3 className="font-semibold  text-[12px]">
+                  Selecione o Mês:{" "}
+                </h3>
+                <p className="text-[12px]">
                   <BuscarMes
                     value={selectedMonth}
                     onSelected={(month) => {
@@ -155,9 +151,9 @@ export default function ItensMesRelatorio() {
                   />
                 </p>
               </div>
-              <div className="flex gap-2 md:gap-4 flex-wrap">
-                <h3 className="font-black  text-lg">Selecione o Ano: </h3>
-                <p className="text-lg">
+              <div className="flex flex-col gap-2 flex-wrap">
+                <h3 className="font-semibold text-[12px]">Selecione o Ano: </h3>
+                <p className="text-[12px]">
                   <BuscarAno
                     value={selectedYear}
                     onSelected={(year) => {
@@ -168,46 +164,48 @@ export default function ItensMesRelatorio() {
               </div>
             </div>
 
-            <div className="flex rounded-md border w-[80vw] ">
-              <Table>
+            <div className="flex">
+              <Table className="w-full overflow-auto table-bordered">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="font-black">
+                    <TableHead className="font-normal text-black w-[150px]">
                       Início do contrato
                     </TableHead>
-                    <TableHead className="font-black ">Mês</TableHead>
-                    <TableHead className="font-black ">Imóvel</TableHead>
-                    <TableHead className="text-left font-black w-[300px]">
+                    <TableHead className="font-normal text-black">
+                      Mês
+                    </TableHead>
+                    <TableHead className="font-normal text-black">
+                      Imóvel
+                    </TableHead>
+                    <TableHead className="text-left font-normal text-black w-[300px]">
                       Administração
                     </TableHead>
 
-                    <TableHead className="text-left font-black w-[200px]">
+                    <TableHead className="text-left font-normal text-black w-[200px]">
                       Impost/IPTU
                     </TableHead>
-                    <TableHead className="text-left font-black w-[250px]">
+                    <TableHead className="text-left font-normal text-black w-[250px]">
                       Aluguel
                     </TableHead>
-                    <TableHead className="text-left font-black w-[200px]">
+                    <TableHead className="text-left font-normal text-black w-[200px]">
                       Condominio
                     </TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody className="h-fit md:h-[40vh] overflow-scroll">
-                  {filteredEstates?.map((item) => {
+                <TableBody className="h-fit overflow-scroll">
+                  {filteredEstates?.map((item, i) => {
                     if (!item?.estate) return;
                     return (
-                      <TableRow>
+                      <TableRow key={i}>
                         <TableCell className="">
-                          {String(
-                            format(item?.estate?.startDate || "", "PPP", {
-                              locale: ptBR,
-                            })
-                          )}
+                          {item?.estate?.startDate
+                            ? FormatterUtils.formatDate(item.estate.startDate)
+                            : "Sem registro de data"}
                         </TableCell>
                         <TableCell className="">
                           {capitalizeFirstLetter(String(selectedMonth))}
                         </TableCell>
-                        <TableCell className="font-bold">
+                        <TableCell className="font-semibold">
                           {item?.estate?.nickname}
                         </TableCell>
                         <TableCell>{item?.estate?.administrator}</TableCell>

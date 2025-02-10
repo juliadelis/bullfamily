@@ -4,6 +4,9 @@ export interface User {
   name: string;
   email: string;
   id: string;
+  isadmin: boolean;
+  isobserver: boolean;
+  personalized: true;
 }
 
 export const fetchAllUsers = async () => {

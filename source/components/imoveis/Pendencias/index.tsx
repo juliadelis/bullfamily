@@ -47,7 +47,7 @@ const AcronymPendencyTable = ({ data }: { data: pendencyAcronymProps }) => {
   return (
     <div>
       {" "}
-      <div className=" rounded-b-none flex items-center [#F1F5F9]  py-[0.75rem] w-[80vw] md:w-[90vw]">
+      <div className=" rounded-b-none flex items-center [#F1F5F9]  py-[0.75rem] ">
         <p className="text-[rgb(51,65,85)] text-xl font-semibold mb-4">
           Siglas de Pendências
         </p>

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { URL } from "url";
 import "./globals.css";
 import Navbar from "@/components/navBar";
+import NewNavbar from "@/components/newNavBar";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -49,15 +50,16 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR" className={inter.className}>
-      <body className="bg-background flex text-foreground overflow-x-hidden ">
-        {/* <Sidebar /> */}
-        <Navbar />
-        <main className="h-screen mt-[70px] pb-[70px] ">
-          <img
-            src="https://res.cloudinary.com/df7wdqak7/image/upload/v1715622122/background_szvaad.png"
-            alt="bg"
-            className="-z-10 fixed h-auto w-full object-cover min-h-full overflow-hidden "
-          />
+      <body className="bg-background flex text-foreground overflow-x-hidden justify-between">
+        <div className="hidden md:block">
+          <NewNavbar />
+        </div>
+
+        <div className="md:mt-[54px]">
+          <Sidebar />
+        </div>
+
+        <main className="h-screen mt-[54px] w-screen p-4 md:p-0 md:ml-[234px] ">
           <div className="z-6 ">{children}</div>
         </main>
         <Toaster />

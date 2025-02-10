@@ -30,9 +30,8 @@ export function HistoryFormComponent({ onSubmit }: HistoryForm) {
     <FormComponent {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="gap-y-4 flex gap-4
-        flex-col   w-full"
-      >
+        className="gap-y-4 flex gap-2
+        flex-col   w-full">
         {historyFields.map(({ name, label, placeholder, type }) => {
           return (
             <FormField
@@ -58,8 +57,7 @@ export function HistoryFormComponent({ onSubmit }: HistoryForm) {
         })}
         <Button
           onClick={form.handleSubmit(onSubmit)}
-          className="w-[100%] col-span-2"
-        >
+          className="w-[100%] col-span-2">
           Enviar
         </Button>
       </form>

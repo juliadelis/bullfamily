@@ -24,7 +24,7 @@ import {
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -56,7 +56,7 @@ interface IPendency {
   due_date: Date;
   pendency: string;
   residence_number: number;
-  estate: Estate;
+  estate: EstateLike;
   estate_id: number;
   fulfillment_date: Date;
 }
@@ -112,7 +112,7 @@ export default function Pendencias() {
   }, []);
 
   const [pendencies, setPendencies] = useState<IPendency[] | null>(null);
-  const [estates, setEstates] = useState<Estate[]>([]);
+  const [estates, setEstates] = useState<EstateLike[]>([]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -132,7 +132,7 @@ export default function Pendencias() {
 
         if (!data) return;
 
-        setEstates(data.sort((a: Estate, b: Estate) => a.id - b.id));
+        setEstates(data.sort((a: EstateLike, b: EstateLike) => a.id - b.id));
       });
   }, []);
   const { toast } = useToast();

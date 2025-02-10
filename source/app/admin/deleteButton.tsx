@@ -1,11 +1,14 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import Image from "next/image";
 import React from "react";
-import trashIcon from "../../assets/icons/trash-2.svg";
+
 import { deleteUser } from "@/utils/deleteUser";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@mui/material";
+import { AiOutlineDelete } from "react-icons/ai";
+
 interface Props {
   id: string;
 }
@@ -29,8 +32,13 @@ const DeleteButton = ({ id }: Props) => {
     }
   };
   return (
-    <Button onClick={destroyUser} variant="ghost">
-      <Image alt="Icone de lixo" src={trashIcon} width={24} height={24} />
+    <Button
+      onClick={destroyUser}
+      variant="text"
+      className="text-12 normal-case text-black"
+      startIcon={<AiOutlineDelete size={14} />}
+      aria-label="Deletar usuário">
+      Excluir
     </Button>
   );
 };

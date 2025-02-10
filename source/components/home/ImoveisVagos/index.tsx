@@ -17,10 +17,10 @@ import ImoveisIrregularesComponent from "@/components/ImoveisIrregularesPage";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { createClient } from "@/utils/supabase/client";
 import Loading from "@/components/loading";
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 
 const ImoveisVagosHome = () => {
-  const [estates, setEstates] = useState<Estate[] | null>();
+  const [estates, setEstates] = useState<EstateLike[] | null>();
 
   useEffect(() => {
     const supabase = createClient();

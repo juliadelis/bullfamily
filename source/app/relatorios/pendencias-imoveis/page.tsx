@@ -16,7 +16,7 @@ import { createClient } from "@/utils/supabase/client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Loading from "@/components/loading";

@@ -15,9 +15,19 @@ export const formSchema = z
     confirmPassword: z
       .string()
       .min(6, { message: "Senha precisa no minimo ter mais de 6 caracteres" }),
-    isObserver: z.boolean({
-      required_error:"É preciso dizer se o usuario é de consulta"
-    })
+    isobserver: z.boolean({
+      required_error: "É preciso dizer se o usuario é de consulta",
+    }),
+    isadmin: z.boolean({
+      required_error: "É preciso dizer se o usuario é administrador",
+    }),
+    personalized: z.boolean(),
+    addestate: z.boolean(),
+    editestate: z.boolean(),
+    deleteestate: z.boolean(),
+    editpayments: z.boolean(),
+    edithistory: z.boolean(),
+    delethistory: z.boolean(),
   })
 
   .superRefine((data, ctx) => {

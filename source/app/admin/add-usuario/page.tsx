@@ -8,6 +8,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loading";
+import { Divider, Typography } from "@mui/material";
+import SubMenu from "@/components/submenu";
+
+const menuItems = [
+  { label: "Painel do admin", href: "/admin" },
+  { label: "Novo usuário", href: "/admin/add-usuario" },
+  { label: "Aprovações", href: "/admin/aprovacoes" },
+];
 
 export default function AddUsuario() {
   const [loading, setloading] = useState(true);
@@ -26,7 +34,16 @@ export default function AddUsuario() {
     email,
     name,
     password,
-    isObserver
+    isobserver,
+    isadmin,
+    addestate,
+    confirmPassword,
+    delethistory,
+    deleteestate,
+    editestate,
+    edithistory,
+    editpayments,
+    personalized,
   }: z.infer<typeof formSchema>) {
     const client = createClient();
 
@@ -43,8 +60,16 @@ export default function AddUsuario() {
           data: {
             email,
             name,
-            isAdmin: false,
-            isObserver
+            isobserver,
+            isadmin,
+            addestate,
+            confirmPassword,
+            delethistory,
+            deleteestate,
+            editestate,
+            edithistory,
+            editpayments,
+            personalized,
           },
         },
       });
@@ -65,10 +90,11 @@ export default function AddUsuario() {
   }
   if (loading) return <Loading />;
   return (
-    <div className="w-full flex flex-col p-4 md:p-16">
-      <div className="bg-white p-6 rounded-lg gap-6 md:gap-16 w-[90vw] md:w-fit">
-        <BackButton />
-        <div className="w-1/2">
+    <div className="w-full flex flex-col p-4 ">
+      <div className="bg-white rounded-lg gap-4 md:w-fit">
+        <SubMenu menuItems={menuItems} />
+        <Divider />
+        <div className="mt-4">
           <Form onSubmit={onSubmit} />
         </div>
       </div>

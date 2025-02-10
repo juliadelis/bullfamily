@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+
 import ImovelTable from "@/components/imoveis/ImovelTable";
 import { Estate } from "@/@types/estate";
 import ImovelHistoryTable from "@/components/imoveis/ImovelHistoryTable copy";
@@ -21,6 +21,10 @@ import { pendencyState } from "@/@types/PendencyState";
 import { HistoryFormComponent } from "@/app/imovel/HistoryForm/form";
 import { formSchemaHistory } from "@/app/imovel/HistoryForm/formSchema";
 import { isObserver } from "@/utils/isObserver";
+import { Button } from "@mui/material";
+import { LuPencil, LuPlus } from "react-icons/lu";
+import { isEditestate } from "@/utils/isEditestate";
+import { isEdithistory } from "@/utils/isEdithistory";
 
 type Props = {
   pendencies: pendencyState[];
@@ -48,22 +52,40 @@ export const DesktopEstateLayout = ({
   year,
 }: Props) => {
   const [isObserverBoolean, setIsObserverBoolean] = useState<boolean>(false);
+  const [iseditestate, setIseditestate] = useState<boolean>(false);
+  const [isedithistory, setIsedithistory] = useState<boolean>(false);
   useEffect(() => {
     isObserver().then((data) => {
       setIsObserverBoolean(Boolean(data));
     });
   }, []);
+  useEffect(() => {
+    isEditestate().then((data) => {
+      setIseditestate(Boolean(data));
+    });
+  }, []);
+  useEffect(() => {
+    isEdithistory().then((data) => {
+      setIsedithistory(Boolean(data));
+    });
+  }, []);
   return (
-    <div className="hidden md:block">
-      <div className="flex gap-[3%]">
+    <div className="hidden md:block p-4">
+      <div className="flex gap-4">
         <div className="flex flex-col ">
-          <ImovelTable {...estate} />
-          {isObserverBoolean ? (
+          <div>
+            <ImovelTable {...estate} />
+          </div>
+          {isObserverBoolean || !iseditestate ? (
             <></>
           ) : (
-            <div className="mt-4 ml-0">
-              <Button variant={"default"} asChild>
-                <Link href={`/imovel/${slug}/editar`}>Editar informações</Link>
+            <div className="mt-1 ml-0">
+              <Button
+                href={`/imovel/${slug}/editar`}
+                variant={"text"}
+                className="text-[12px] text-black normal-case underline"
+                startIcon={<LuPencil size={12} />}>
+                Editar informações
               </Button>
             </div>
           )}
@@ -83,11 +105,15 @@ export const DesktopEstateLayout = ({
             <ImovelHistoryTable data={estateHistory} />
             <div className="mt-4 ml-0">
               <Dialog>
-                {isObserverBoolean ? (
+                {isObserverBoolean || !isedithistory ? (
                   <></>
                 ) : (
                   <DialogTrigger>
-                    <Button variant="blue">Adicionar histórico</Button>
+                    <Button
+                      className="text-[12px] text-black normal-case underline"
+                      startIcon={<LuPlus size={12} />}>
+                      Adicionar histórico
+                    </Button>
                   </DialogTrigger>
                 )}
 

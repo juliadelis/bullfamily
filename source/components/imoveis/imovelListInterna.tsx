@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ImovelIntDatasProps } from "./ImovelTable/types";
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 import { createClient } from "@/utils/supabase/client";
 
 const ImoveisListInterna = () => {
-  const [estates, setEstates] = useState<Estate[] | null>();
+  const [estates, setEstates] = useState<EstateLike[] | null>();
 
   useEffect(() => {
     const supabase = createClient();
@@ -19,7 +19,7 @@ const ImoveisListInterna = () => {
 
         if (!data) return;
 
-        setEstates(data.sort((a: Estate, b: Estate) => a.id - b.id));
+        setEstates(data.sort((a: EstateLike, b: EstateLike) => a.id - b.id));
       });
   }, []);
 

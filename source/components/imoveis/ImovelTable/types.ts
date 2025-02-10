@@ -1,4 +1,4 @@
-import { Estate } from "@/app/imovel/page";
+import { EstateLike } from "@/app/imovel/page";
 
 export interface ImovelProps {
   id: number;
@@ -36,14 +36,14 @@ export interface ImovelProps {
 }
 
 export interface ImovelDataProps {
-  data: Estate;
+  data: EstateLike;
 }
 
 export interface ImovelDatasProps {
-  datas: Estate[];
-  openDeletePopUp: (estate: Estate) => void;
+  datas: EstateLike[];
+  openDeletePopUp: (estate: EstateLike) => void;
 }
 
 export interface ImovelIntDatasProps {
-  datas: Estate[];
+  datas: EstateLike[];
 }

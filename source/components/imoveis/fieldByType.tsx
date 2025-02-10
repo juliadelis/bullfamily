@@ -1,27 +1,33 @@
 "use client";
 
 import { ControllerRenderProps } from "react-hook-form";
-import { PhoneInput } from "./phoneInput";
-import { Input, InputProps } from "../ui/input";
-import { PriceInput } from "./priceInput";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { CldUploadButton } from "next-cloudinary";
-import { DatePicker } from "./datePicker";
 import {
-  SelectContent,
-  SelectItem,
+  TextField,
+  Switch,
   Select,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { useEffect, useState } from "react";
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+} from "@mui/material";
+import { Key, useEffect, useRef, useState } from "react";
 import { Estate } from "@/@types/estate";
 import { createClient } from "@/utils/supabase/client";
 import { pendencyAcronym } from "@/@types/PendencyAcronym";
-import PasswordInput from "@/app/login/password";
+import {
+  PasswordInput,
+  UserPasswordInput,
+  ConfirmUserPasswordInput,
+} from "@/app/login/password";
+import { FiUploadCloud } from "react-icons/fi";
+import { BsUpload } from "react-icons/bs";
+import Image from "next/image";
+import { AiOutlineDelete } from "react-icons/ai";
+import { CldUploadWidget, getCldOgImageUrl } from "next-cloudinary";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import { FormatterUtils } from "@/utils/formatter.utils";
 
-interface Props extends InputProps {
+interface Props {
   type:
     | "tel"
     | "text"
@@ -31,7 +37,17 @@ interface Props extends InputProps {
     | "date"
     | "price"
     | "photo"
-    | "password";
+    | "password"
+    | "userPassword"
+    | "confirmUserPassword"
+    | "selectEstate"
+    | "selectPendency"
+    | "select"
+    | "dateDes"
+    | "textarea"
+    | "selectFinancePerson"
+    | "name"
+    | "selectStatus";
   field: ControllerRenderProps<any, any>;
   placeholder?: string;
   name: string;
@@ -50,6 +66,11 @@ export const FieldByType = ({
 }: Props) => {
   const [estates, setEstates] = useState<Estate[] | null>();
   const [pendency, setPendency] = useState<pendencyAcronym[] | null>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef(null);
+  const [images, setImages] = useState<string[]>(
+    Array.isArray(field.value) ? field.value : []
+  );
   useEffect(() => {
     const supabase = createClient();
     supabase
@@ -57,9 +78,7 @@ export const FieldByType = ({
       .select("*")
       .then(({ data, error }) => {
         if (error) console.log(error);
-
         if (!data) return;
-
         setEstates(data.sort((a: Estate, b: Estate) => a.id - b.id));
       });
   }, []);
@@ -71,141 +90,243 @@ export const FieldByType = ({
       .select("*")
       .then(({ data, error }) => {
         if (error) console.log(error);
-
         if (!data) return;
-
         setPendency(data);
       });
   }, []);
 
-  const fields = {
-    tel: <PhoneInput {...rest} field={field} />,
-    text: <Input placeholder={placeholder} {...field} />,
-    email: <Input placeholder={placeholder} type="email" {...field} />,
-    number: (
-      <Input
-        min={min ? min : 0}
-        max={max ? max : undefined}
-        type="number"
-        placeholder={placeholder}
+  const fields: Record<Props["type"], JSX.Element> = {
+    tel: (
+      <TextField
+        size="small"
+        type="tel"
+        label={placeholder}
         {...field}
+        value={field.value ?? ""}
+        fullWidth
       />
     ),
-    price: (
-      <PriceInput name={name} field={field} placeholder={placeholder || " "} />
+    text: (
+      <TextField
+        size="small"
+        label={placeholder}
+        {...field}
+        value={field.value ?? ""}
+        fullWidth
+      />
+    ),
+    name: (
+      <TextField
+        size="small"
+        label={placeholder}
+        {...field}
+        value={field.value ?? ""}
+      />
+    ),
+    email: (
+      <TextField size="small" type="email" label={placeholder} {...field} />
+    ),
+    number: (
+      <TextField
+        inputProps={{ "aria-label": "controlled" }}
+        size="small"
+        type="number"
+        label={placeholder}
+        {...field}
+        value={field.value ?? ""}
+        fullWidth
+      />
     ),
     checkbox: (
-      <Switch
-        className="ml-8"
-        checked={field.value}
-        onCheckedChange={field.onChange}
+      <div className="w-full">
+        <Switch
+          inputProps={{ "aria-label": "controlled" }}
+          size="small"
+          checked={field.value}
+          onChange={(_, checked) => field.onChange(checked)}
+        />
+      </div>
+    ),
+    textarea: (
+      <TextField
+        inputProps={{ "aria-label": "controlled" }}
+        size="small"
+        multiline
+        rows={4}
+        fullWidth
+        placeholder={placeholder}
+        {...field}
+        value={field.value ?? ""}
       />
     ),
-    date: <DatePicker field={field} />,
-    dateDes: <DatePicker field={field} />,
-    textarea: <Textarea {...field} placeholder={placeholder} />,
-    selectStatus: (
-      <>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Pago em dia">Pago em dia</SelectItem>
-            <SelectItem value="Pago em atraso">Pago em atraso</SelectItem>
-            <SelectItem value="Não foi pago">Não foi pago</SelectItem>
-            <SelectItem value="Isento">Isento</SelectItem>
-            <SelectItem value="Pago adiantado">Pago Adiantado</SelectItem>
-          </SelectContent>
-        </Select>
-      </>
-    ),
     selectFinancePerson: (
-      <>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Pago por..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Sr. José">Sr. José</SelectItem>
-            <SelectItem value="Inquilino">Inquilino</SelectItem>
-          </SelectContent>
+      <FormControl fullWidth>
+        <InputLabel>Pago por...</InputLabel>
+        <Select
+          inputProps={{ "aria-label": "controlled" }}
+          size="small"
+          value={field.value ?? ""}
+          onChange={field.onChange}
+          label="Pago por...">
+          <MenuItem value="Sr. José">Sr. José</MenuItem>
+          <MenuItem value="Inquilino">Inquilino</MenuItem>
         </Select>
-      </>
+      </FormControl>
+    ),
+    selectStatus: (
+      <FormControl fullWidth>
+        <InputLabel>Status</InputLabel>
+        <Select
+          inputProps={{ "aria-label": "controlled" }}
+          size="small"
+          value={field.value ?? ""}
+          onChange={field.onChange}
+          label="Status">
+          <MenuItem value="Pago em dia">Pago em dia</MenuItem>
+          <MenuItem value="Pago em atraso">Pago em atraso</MenuItem>
+          <MenuItem value="Não foi pago">Não foi pago</MenuItem>
+          <MenuItem value="Isento">Isento</MenuItem>
+          <MenuItem value="Pago adiantado">Pago Adiantado</MenuItem>
+        </Select>
+      </FormControl>
+    ),
+
+    date: <TextField size="small" type="date" {...field} fullWidth />,
+    dateDes: <TextField size="small" type="date" {...field} fullWidth />,
+    password: <PasswordInput onValueChange={field.onChange} />,
+    userPassword: <UserPasswordInput onValueChange={field.onChange} />,
+    confirmUserPassword: (
+      <ConfirmUserPasswordInput onValueChange={field.onChange} />
     ),
     selectEstate: (
-      <>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecione um imóvel" />
-          </SelectTrigger>
-
-          <SelectContent>
-            {estates?.map((data, i) => (
-              <SelectItem value={`${data.id}-${data.nickname}`}>
-                {i + 1} - {data.nickname}
-              </SelectItem>
-            ))}
-          </SelectContent>
+      <FormControl fullWidth>
+        <InputLabel>Selecione um imóvel</InputLabel>
+        <Select
+          size="small"
+          value={field.value ?? ""}
+          onChange={field.onChange}>
+          {estates?.map((data, i) => (
+            <MenuItem key={data.id} value={`${data.id}-${data.nickname}`}>
+              {i + 1} - {data.nickname}
+            </MenuItem>
+          ))}
         </Select>
-      </>
+      </FormControl>
+    ),
+    selectPendency: (
+      <FormControl fullWidth>
+        <InputLabel>Selecione uma pendência</InputLabel>
+        <Select
+          size="small"
+          value={field.value ?? ""}
+          onChange={field.onChange}>
+          {pendency?.map((data) => (
+            <MenuItem key={data.id} value={`${data.id}-${data.acronym}`}>
+              {data.acronym}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     ),
     photo: (
-      <div>
-        <CldUploadButton
+      <div className="w-full flex flex-col gap-2">
+        {/* <CldUploadWidget
+          uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME}
+          options={{ multiple: true }}
+          onSuccess={(result) => {
+            if (
+              result.event === "success" &&
+              typeof result.info === "object" &&
+              "secure_url" in result.info
+            ) {
+              const secureUrl = result.info.secure_url as string;
+              setImages((prev) => [...prev, secureUrl]);
+            }
+          }}>
+          {({ open }) => (
+            <Button variant="contained" color="primary" onClick={() => open()}>
+              Upload Imagens
+            </Button>
+          )}
+        </CldUploadWidget> */}
+
+        <CldUploadWidget
           onSuccess={({ info }) => {
             //@ts-ignore
             if (!info?.public_id) return;
 
             //@ts-ignore
             field.onChange(info?.public_id);
+
+            if (typeof info === "object" && "secure_url" in info) {
+              const secureUrl = info.secure_url as string;
+              setImages((prev) => [...prev, secureUrl]);
+            }
           }}
           uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME}>
-          <span>Upload</span>
-        </CldUploadButton>
+          {({ open }) => (
+            <Button
+              variant="contained"
+              className="bg-black normal-case w-fit"
+              onClick={() => open()}
+              startIcon={<BsUpload size={14} />}>
+              Upload
+            </Button>
+          )}
+        </CldUploadWidget>
+
+        <div className="flex flex-wrap gap-4 mt-2">
+          {Array.isArray(images) &&
+            images.map((src, index) => (
+              <div key={index} className="relative w-32 h-32">
+                <Image
+                  src={src}
+                  alt="Uploaded preview"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-md"
+                />
+                <button
+                  onClick={() =>
+                    setImages((prev) => prev.filter((_, i) => i !== index))
+                  }
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
+                  <AiOutlineDelete size={16} />
+                </button>
+              </div>
+            ))}
+        </div>
       </div>
     ),
-    selectPendency: (
-      <>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecione uma pendência" />
-          </SelectTrigger>
-
-          <SelectContent>
-            {pendency?.map((data) => (
-              <SelectItem value={`${data.id}-${data.acronym}`}>
-                {data.acronym}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </>
-    ),
-    password: <PasswordInput onValueChange={field.onChange} />,
     select: (
-      <>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Alugado">Alugado</SelectItem>
-            <SelectItem value="À venda">À venda</SelectItem>
-            <SelectItem value="Imóvel novo">Imóvel novo</SelectItem>
-            <SelectItem value="Metra - sede">metra - sede</SelectItem>
-            <SelectItem value="Metra - instituto">metra - instituto</SelectItem>
-            <SelectItem value="Em construção">Em construção</SelectItem>
-            <SelectItem value="Em reforma">Em reforma</SelectItem>
-            <SelectItem value="Desocupado">Desocupado</SelectItem>
-            <SelectItem value="Moradia do senhor josé">
-              Moradia do senhor José
-            </SelectItem>
-          </SelectContent>
+      <FormControl fullWidth>
+        <InputLabel>Status</InputLabel>
+        <Select
+          size="small"
+          value={field.value ?? ""}
+          onChange={field.onChange}
+          label="Status">
+          <MenuItem value="Alugado">Alugado</MenuItem>
+          <MenuItem value="À venda">À venda</MenuItem>
+          <MenuItem value="A alugar">A alugar</MenuItem>
+          <MenuItem value="Ocioso">Ocioso</MenuItem>
+          <MenuItem value="A Adquirir">A Adquirir</MenuItem>
+          <MenuItem value="Demandas">Demandas</MenuItem>
         </Select>
-      </>
+      </FormControl>
+    ),
+    price: (
+      <TextField
+        size="small"
+        type="number"
+        label="Preço"
+        {...field}
+        value={field.value ?? ""}
+        onChange={(e) => field.onChange(Number(e.target.value))}
+        fullWidth
+      />
     ),
   };
 
-  return fields[type];
+  return fields[type] || null;
 };

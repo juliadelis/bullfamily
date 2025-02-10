@@ -54,4 +54,5 @@ export interface Estate {
   afterPhoto: string;
   unoccupied: Date;
   extra: number;
+  proprietary?: string;
 }
