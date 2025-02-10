@@ -18,7 +18,7 @@ import { pendencyState } from "@/@types/PendencyState";
 import { useEffect, useState } from "react";
 import { pendencyAcronym } from "@/@types/PendencyAcronym";
 import { createClient } from "@/utils/supabase/client";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, MenuItem, Select, TextField } from "@mui/material";
 
 interface PendencyAcronymForm {
   onSubmit: (data: z.infer<typeof formSchemaPendency>) => Promise<void>;
@@ -34,8 +34,6 @@ export function PendencyStateComponent({
   idState,
 }: PendencyAcronymForm) {
   const [pendency, setPendency] = useState<pendencyAcronym[]>([]);
-  const [value, setValue] = useState<pendencyAcronym | null>(null);
-  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
@@ -53,18 +51,11 @@ export function PendencyStateComponent({
     resolver: zodResolver(formSchemaPendency),
     defaultValues: {
       nameEstate: nameEstate ?? data?.nameEstate ?? "",
-      pendency_acronym: data?.pendency_acronym ? data?.pendency_acronym : "",
+      pendency_acronym: data?.pendency_acronym || "",
       date: data?.date ? new Date(data.date) : new Date(),
       idState: idState ?? data?.idstate ?? 0,
     },
   });
-
-  const handleSelection = (newValue: pendencyAcronym | null) => {
-    setValue(newValue);
-    if (newValue) {
-      form.setValue("pendency_acronym", newValue ? newValue.acronym : "");
-    }
-  };
 
   return (
     <FormComponent {...form}>
@@ -77,28 +68,27 @@ export function PendencyStateComponent({
             control={form.control}
             name="pendency_acronym"
             render={({ field }) => (
-              <Autocomplete
-                value={value}
-                onChange={(event, newValue) => {
-                  handleSelection(newValue);
-                }}
-                inputValue={inputValue}
-                onInputChange={(event, newInputValue) => {
-                  setInputValue(newInputValue);
-                }}
-                options={pendency}
-                getOptionLabel={(option) => option.acronym}
-                isOptionEqualToValue={(option, value) =>
-                  option.acronym === value?.acronym
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Selecione uma pendência"
-                    size="small"
-                  />
-                )}
-              />
+              <FormItem className="flex flex-col">
+                <FormLabel>Selecione uma pendência</FormLabel>
+                <FormControl>
+                  <select
+                    value={field.value || ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    className="border rounded-md p-2 text-sm">
+                    <option value="" disabled>
+                      Selecione uma opção
+                    </option>
+                    {pendency.map((option) => (
+                      <option
+                        key={option.id}
+                        value={`${option.id}-${option.acronym}`}>
+                        {option.acronym}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
 
@@ -125,9 +115,7 @@ export function PendencyStateComponent({
               </FormItem>
             )}
           />
-          <Button
-            onClick={form.handleSubmit(onSubmit)}
-            className="w-fit col-span-2">
+          <Button type="submit" className="w-fit col-span-2">
             Enviar
           </Button>
         </form>

@@ -224,7 +224,6 @@ const MainTable = ({ filter }: { filter?: string | null }) => {
     const client = createClient();
     try {
       const [idpendency, pendencyAcronym] = pendency_acronym.split("-");
-      const [idestate, name_Estate] = nameEstate.split("-");
 
       const payload = {
         idState,
@@ -254,7 +253,6 @@ const MainTable = ({ filter }: { filter?: string | null }) => {
         title: "Pendência adicionada com sucesso!",
       });
 
-      // Atualizar estado local ou redirecionar após o sucesso
       window.location.reload();
     } catch (error) {
       console.error("Erro inesperado:", error);
