@@ -14,7 +14,6 @@ export const SelectManual = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <label>
         <select
-          ref={ref}
           className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-[12px] shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
           {...props}
           onChange={onChange}
@@ -48,7 +47,6 @@ export const SelectMesManual = forwardRef<HTMLSelectElement, SelectMesProps>(
     return (
       <label>
         <select
-          ref={ref}
           className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-[12px] shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[280px]"
           {...props}
           onChange={onChange}
