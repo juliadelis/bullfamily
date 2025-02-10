@@ -35,6 +35,7 @@ export default function EditEstatePage({
     const res = localStorage.getItem("user");
     if (!res) {
       redirect("/login");
+      return;
     }
 
     const parsedUser = JSON.parse(res).data.user;

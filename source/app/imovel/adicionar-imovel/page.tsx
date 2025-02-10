@@ -29,6 +29,7 @@ export default function AdicionarImovel() {
     const user = localStorage.getItem("user");
     if (!user) {
       redirect("/login");
+      return;
     }
 
     const parsedUser = JSON.parse(user).data.user;
