@@ -2,6 +2,7 @@ import { isAdmin } from "@/utils/isAdmin";
 import { useEffect, useState } from "react";
 import { SidebarItem, SubSidebarItem } from "./sidebarItem";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { FiPlus, FiMenu, FiX } from "react-icons/fi"; // Ícones para mobile
 import { Estate } from "@/@types/estate";
@@ -10,6 +11,7 @@ import { isAddestate } from "@/utils/isAddestate";
 import { Autocomplete, IconButton, TextField } from "@mui/material";
 
 export const Sidebar = () => {
+  const router = useRouter();
   const [isAdminBoolean, setIsAdminBoolean] = useState<boolean>(false);
   const [isObserverBoolean, setIsObserverBoolean] = useState<boolean>(false);
   const [isaddestateBoolean, setIsaddestateBoolean] = useState<boolean>(false);
@@ -72,7 +74,8 @@ export const Sidebar = () => {
   const handleSelection = (newValue: Estate | null) => {
     setValue(newValue);
     if (newValue) {
-      redirect(`/imovel/${newValue.id}`);
+      console.log("Redirecionando para:", `/imovel/${newValue.id}`);
+      router.push(`/imovel/${newValue.id}`);
     }
   };
 
@@ -89,6 +92,7 @@ export const Sidebar = () => {
             <Autocomplete
               value={value}
               onChange={(event, newValue) => {
+                console.log("Novo valor selecionado:", newValue);
                 handleSelection(newValue);
               }}
               inputValue={inputValue}

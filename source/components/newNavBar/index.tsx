@@ -5,8 +5,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { Estate } from "@/@types/estate";
 import { createClient } from "@/utils/supabase/client";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const NewNavbar = () => {
+  const router = useRouter();
   const [estates, setEstates] = useState<Estate[]>([]);
   const [value, setValue] = useState<Estate | null>(null);
   const [inputValue, setInputValue] = useState("");
@@ -26,7 +28,8 @@ const NewNavbar = () => {
   const handleSelection = (newValue: Estate | null) => {
     setValue(newValue);
     if (newValue) {
-      redirect(`/imovel/${newValue.id}`);
+      console.log("Redirecionando para:", `/imovel/${newValue.id}`);
+      router.push(`/imovel/${newValue.id}`);
     }
   };
 
