@@ -58,12 +58,9 @@ export default function Imovel() {
     if (!user) {
       redirect("/login");
     }
-    setloading(false);
+    setLoading(false);
   }, []);
 
-  const [estates, setEstates] = useState<Estate[] | null>();
-  const [deletePopUpOpened, setDeletePopUpOpened] = useState(false);
-  const [selectedEstate, setselectedEstate] = useState<Estate | null>(null);
   useEffect(() => {
     const fetchEstates = async () => {
       const supabase = createClient();
@@ -92,7 +89,7 @@ export default function Imovel() {
 
   const closeDeletePopUp = () => {
     setDeletePopUpOpened(false);
-    setselectedEstate(null);
+    setSelectedEstate(null);
   };
 
   const requestDeleteEstate = async () => {
