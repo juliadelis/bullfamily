@@ -169,12 +169,12 @@ export const Sidebar = () => {
             <SubSidebarItem href="/relatorios/contratos-a-vencer">
               Contratos a vencer
             </SubSidebarItem>
-            <SubSidebarItem href="/relatorios/providencias-a-serem-tomadas">
+            {/* <SubSidebarItem href="/relatorios/providencias-a-serem-tomadas">
               Providências agendadas nos próximos 30 dias
-            </SubSidebarItem>
-            <SubSidebarItem href="/relatorios/valor-do-aluguel-ate-o-presente-mes">
+            </SubSidebarItem> */}
+            {/* <SubSidebarItem href="/relatorios/valor-do-aluguel-ate-o-presente-mes">
               Valor do aluguel pelo índice de contrato
-            </SubSidebarItem>
+            </SubSidebarItem> */}
           </SidebarItem>
           <SidebarItem text="Lista de Imóveis">
             {estates?.map((estate, i) => (
