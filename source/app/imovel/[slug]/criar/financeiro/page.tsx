@@ -213,8 +213,8 @@ export default function EditPaymentPage({
   if (loading) return <Loading />;
 
   return (
-    <div className="p-4 md:p-10  w-[100vw]">
-      <div className="bg-white p-6 rounded-lg">
+    <div className="p-4 ">
+      <div>
         <h3 className="text-xl font-bold">Adicionar registro de pagamento</h3>
         <div className="flex gap-4 mt-6">
           <p className="text-md font-medium">
