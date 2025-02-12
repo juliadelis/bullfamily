@@ -69,7 +69,8 @@ export const ProcessAction = async (actionId: string, approve: boolean) => {
         console.log("💰 Editar pagamento:", changeData);
         const { error: paymenEditError } = await client
           .from("financialRecord")
-          .update(changeData);
+          .update(changeData)
+          .eq("id", changeData.id);
         actionError = paymenEditError;
         break;
 
