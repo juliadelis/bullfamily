@@ -10,12 +10,8 @@ import { redirect, useRouter } from "next/navigation";
 import Loading from "@/components/loading";
 import { Button } from "@mui/material";
 
-export default function EditarUsuario({
-  params,
-}: {
-  params: Promise<{ uid: string }>;
-}) {
-  const { uid } = use(params);
+export default function EditarUsuario({ params }: { params: { uid: string } }) {
+  const { uid } = params;
 
   const [loading, setloading] = useState(true);
   const [user, setUser] = useState<any>(null);
