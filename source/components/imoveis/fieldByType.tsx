@@ -191,8 +191,24 @@ export const FieldByType = ({
       </FormControl>
     ),
 
-    date: <TextField size="small" type="date" {...field} fullWidth />,
-    dateDes: <TextField size="small" type="date" {...field} fullWidth />,
+    date: (
+      <TextField
+        size="small"
+        type="date"
+        {...field}
+        value={field.value ?? ""}
+        fullWidth
+      />
+    ),
+    dateDes: (
+      <TextField
+        size="small"
+        type="date"
+        {...field}
+        value={field.value ?? ""}
+        fullWidth
+      />
+    ),
     password: <PasswordInput onValueChange={field.onChange} />,
     userPassword: <UserPasswordInput onValueChange={field.onChange} />,
     confirmUserPassword: (

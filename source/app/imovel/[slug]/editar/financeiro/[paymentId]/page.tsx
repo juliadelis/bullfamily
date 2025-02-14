@@ -82,12 +82,16 @@ export default function EditPaymentPage({
         month: sanitizeNumber(payment?.month),
         year: sanitizeNumber(payment?.year),
         observations: formData.observations || "",
-        propertyTaxIPTU: formData.propertyTaxIPTU || null,
-        gas: formData.gas || null,
-        enel: formData.enel || null,
-        rent: formData.rent || null,
-        sabesp: formData.sabesp || null,
-        condominium: formData.condominium || null,
+        propertyTaxIPTU: formData.propertyTaxIPTU
+          ? new Date(formData.propertyTaxIPTU)
+          : null,
+        gas: formData?.gas ? new Date(formData.gas) : null,
+        enel: formData?.enel ? new Date(formData.enel) : null,
+        rent: formData?.rent ? new Date(formData.rent) : null,
+        sabesp: formData?.sabesp ? new Date(formData.sabesp) : null,
+        condominium: formData.condominium
+          ? new Date(formData.condominium)
+          : null,
         estateId: Number(params.slug),
         statusPropertyTaxIPTU: formData.statusPropertyTaxIPTU || "",
         statusRent: formData.statusRent || "",
@@ -97,7 +101,7 @@ export default function EditPaymentPage({
         statusEnel: formData.statusEnel || "",
         statusGas: formData.statusGas || "",
         extraStatus: formData.extraStatus || "",
-        extra: formData.extra || null,
+        extra: formData.extra ? new Date(formData.extra) : null,
         extraValue: sanitizeNumber(formData.extraValue),
         gasValue: sanitizeNumber(formData.gasValue),
         enelValue: sanitizeNumber(formData.enelValue),
@@ -136,7 +140,7 @@ export default function EditPaymentPage({
   return (
     <div className="p-4 md:p-10 w-[100vw]">
       <div className="bg-white p-6 rounded-lg">
-        <h3 className="text-lg">Adicionar registro de pagamento</h3>
+        <h3 className="text-lg">Editar registro de pagamento</h3>
         <div className="flex gap-4 mt-4">
           <p className="text-md font-medium">
             <b>Mes:</b> {payment.month}

@@ -2,13 +2,13 @@
 import { z } from "zod";
 
 export const formSchema = z.object({
-  propertyTaxIPTU: z.date().optional(),
-  rent: z.date().optional(),
-  condominium: z.date().optional(),
-  sabesp: z.date().optional(),
-  enel: z.date().optional(),
-  gas: z.date().optional(),
-  extra: z.date().optional(),
+  propertyTaxIPTU: z.string().optional(),
+  rent: z.string().optional(),
+  condominium: z.string().optional(),
+  sabesp: z.string().optional(),
+  enel: z.string().optional(),
+  gas: z.string().optional(),
+  extra: z.string().optional(),
   propertyTaxIPTUValue: z.number().optional(),
   rentValue: z.number().optional(),
   condominiumValue: z.number().optional(),

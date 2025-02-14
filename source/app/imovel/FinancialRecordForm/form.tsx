@@ -26,16 +26,12 @@ export function PaymentFormComponent({ onSubmit, payment }: PaymentForm) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      gas: payment?.gas ? new Date(payment.gas) : defaultDate,
-      enel: payment?.enel ? new Date(payment?.enel) : defaultDate,
-      rent: payment?.rent ? new Date(payment?.rent) : defaultDate,
-      propertyTaxIPTU: payment?.propertyTaxIPTU
-        ? new Date(payment?.propertyTaxIPTU)
-        : defaultDate,
-      sabesp: payment?.sabesp ? new Date(payment?.sabesp) : defaultDate,
-      condominium: payment?.condominium
-        ? new Date(payment?.condominium)
-        : defaultDate,
+      gas: payment?.gas ?? "",
+      enel: payment?.enel ?? "",
+      rent: payment?.rent ?? "",
+      propertyTaxIPTU: payment?.propertyTaxIPTU ?? "",
+      sabesp: payment?.sabesp ?? "",
+      condominium: payment?.condominium ?? "",
       observations: payment?.observations ? payment?.observations : "",
       statusPropertyTaxIPTU: payment?.statusPropertyTaxIPTU
         ? payment?.statusPropertyTaxIPTU
@@ -59,7 +55,7 @@ export function PaymentFormComponent({ onSubmit, payment }: PaymentForm) {
       enelValue: payment?.enelValue ? payment?.enelValue : 0,
       gasValue: payment?.gasValue ? payment?.gasValue : 0,
       extraValue: payment?.extraValue ? payment?.extraValue : 0,
-      extra: payment?.extra ? new Date(payment?.extra) : defaultDate,
+      extra: payment?.extra ?? "",
       rentPerson: payment?.rentPerson ? payment?.rentPerson : "",
       condominiumPerson: payment?.condominiumPerson
         ? payment?.condominiumPerson
@@ -79,8 +75,7 @@ export function PaymentFormComponent({ onSubmit, payment }: PaymentForm) {
       <ScrollArea className="p-16 pl-0  ">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="gap-y-4 grid grid-cols-2  md:grid-cols-2 gap-4
-           w-full">
+          className="gap-y-4 grid grid-cols-2  md:grid-cols-2 gap-4">
           {inputs.map(({ name, label, placeholder, type }) => {
             return (
               <FormField
