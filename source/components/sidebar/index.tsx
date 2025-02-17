@@ -155,6 +155,9 @@ export const Sidebar = () => {
             <SubSidebarItem href="/relatorios/imoveis-vagos">
               Imóveis Vagos
             </SubSidebarItem>
+            <SubSidebarItem href="/relatorios/imoveis-pendentes">
+              Imóveis Pendentes
+            </SubSidebarItem>
             <SubSidebarItem href="/relatorios/itens-gerais-de-pagamento-feitos-no-mes-em-curso">
               Itens gerais de pagamento feitos no mês em curso
             </SubSidebarItem>

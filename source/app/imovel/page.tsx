@@ -14,6 +14,8 @@ import { registerAction } from "@/components/actionRegister";
 import { toast } from "@/components/ui/use-toast";
 
 export interface EstateLike {
+  pendencias?: any;
+  pagamentoPendente?: any;
   id: number;
   status: string;
   nickname: string;
