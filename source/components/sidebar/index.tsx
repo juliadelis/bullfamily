@@ -123,18 +123,17 @@ export const Sidebar = () => {
         </IconButton>
 
         <div
-          className="w-full flex flex-col gap-[10px] text-[12px] py-5 max-w-[234px] overflow-y-auto max-h-screen pb-[60px]"
+          className="w-full flex flex-col gap-[10px] text-[12px] pt-[80px] py-5 max-w-[234px] overflow-y-auto max-h-screen pb-[60px]"
           style={{
             scrollbarWidth: "thin",
             scrollbarColor: "#c1c1c1 #f5f5f5",
           }}>
-          {isObserverBoolean || !isaddestateBoolean ? null : (
-            <SidebarItem
-              href="/imovel/adicionar-imovel"
-              text="Adicionar imóvel"
-              icon={<FiPlus />}
-            />
-          )}
+          <SidebarItem
+            href="/imovel/adicionar-imovel"
+            text="Adicionar imóvel"
+            icon={<FiPlus />}
+          />
+
           <SidebarItem text={user?.name}>
             {isAdminBoolean && (
               <SubSidebarItem href="/admin">Painel do Admin</SubSidebarItem>
