@@ -134,11 +134,9 @@ export const PaymentTable = (props: Props) => {
   }
 
   function formatDate(stringDate: string) {
-    const date = new Date(stringDate);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
+    if (!stringDate) return "";
 
+    const [year, month, day] = stringDate.split("T")[0].split("-"); // Garantir que pegamos a data correta sem fuso
     return `${day}/${month}/${year}`;
   }
 

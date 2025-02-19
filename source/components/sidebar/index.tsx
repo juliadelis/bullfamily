@@ -161,7 +161,7 @@ export const Sidebar = () => {
             <SubSidebarItem href="/relatorios/itens-gerais-de-pagamento-feitos-no-mes-em-curso">
               Itens gerais de pagamento feitos no mês em curso
             </SubSidebarItem>
-            <SubSidebarItem href="/relatorios/ganhos-e-perdas-totais-do-mes">
+            <SubSidebarItem href="/relatorios/receita-prevista">
               Receita Prevista
             </SubSidebarItem>
             <SubSidebarItem href="/relatorios/itens-gerais-de-pagamento-em-atraso-no-mes-em-curso">
