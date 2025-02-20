@@ -96,7 +96,24 @@ export default function ItensMesPagamentoRelatorio() {
           new Date(payment.year, payment.month - 1) >=
           new Date(selectedEstate.startDate)
       )
-      .map((payment) => ({ ...payment, estate: selectedEstate }));
+      .map((payment) => ({ ...payment, estate: selectedEstate }))
+      .sort((a, b) => {
+        // Explicitly convert year and month to numbers
+        const yearA = Number(a.year);
+        const monthA = Number(a.month) - 1;
+        const yearB = Number(b.year);
+        const monthB = Number(b.month) - 1;
+
+        // Check if the conversion resulted in valid numbers
+        if (isNaN(yearA) || isNaN(monthA) || isNaN(yearB) || isNaN(monthB)) {
+          return 0; // If any value is NaN, keep the original order
+        }
+
+        const dateA = new Date(yearA, monthA);
+        const dateB = new Date(yearB, monthB);
+
+        return dateB.getTime() - dateA.getTime();
+      });
 
     setFilteredPayments(filtered);
   }, [selectedEstate, payments]);
