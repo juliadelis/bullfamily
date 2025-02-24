@@ -1,6 +1,6 @@
 export const inputs = [
   {
-    name: "propetyTaxIPTU",
+    name: "propertyTaxIPTU",
     label: "IPTU",
     type: "date",
     placeholder: "",

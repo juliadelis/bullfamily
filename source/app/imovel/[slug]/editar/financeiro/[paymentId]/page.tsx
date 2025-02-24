@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@/utils/supabase/client";
-
+import { parseISO, format } from "date-fns";
 import { z } from "zod";
 import { FinancialRecord } from "@/components/payments-table";
 
@@ -68,6 +68,16 @@ export default function EditPaymentPage({
       });
   }, []);
 
+  const adjustDateForUTC = (dateString?: string | null) => {
+    if (!dateString) return null;
+    const localDate = new Date(dateString);
+    return isNaN(localDate.getTime())
+      ? null
+      : new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .split("T")[0];
+  };
+
   async function onSubmit(formData: z.infer<typeof formSchema>) {
     const client = createClient();
 
@@ -83,15 +93,16 @@ export default function EditPaymentPage({
         year: sanitizeNumber(payment?.year),
         observations: formData.observations || "",
         propertyTaxIPTU: formData.propertyTaxIPTU
-          ? new Date(formData.propertyTaxIPTU)
+          ? adjustDateForUTC(formData.propertyTaxIPTU)
           : null,
-        gas: formData?.gas ? new Date(formData.gas) : null,
-        enel: formData?.enel ? new Date(formData.enel) : null,
-        rent: formData?.rent ? new Date(formData.rent) : null,
-        sabesp: formData?.sabesp ? new Date(formData.sabesp) : null,
+        gas: formData?.gas ? adjustDateForUTC(formData.gas) : null,
+        enel: formData?.enel ? adjustDateForUTC(formData.enel) : null,
+        rent: formData?.rent ? adjustDateForUTC(formData.rent) : null,
+        sabesp: formData?.sabesp ? adjustDateForUTC(formData.sabesp) : null,
         condominium: formData.condominium
-          ? new Date(formData.condominium)
+          ? adjustDateForUTC(formData.condominium)
           : null,
+        extra: formData.extra ? adjustDateForUTC(formData.extra) : null,
         estateId: Number(params.slug),
         statusPropertyTaxIPTU: formData.statusPropertyTaxIPTU || "",
         statusRent: formData.statusRent || "",
@@ -101,7 +112,6 @@ export default function EditPaymentPage({
         statusEnel: formData.statusEnel || "",
         statusGas: formData.statusGas || "",
         extraStatus: formData.extraStatus || "",
-        extra: formData.extra ? new Date(formData.extra) : null,
         extraValue: sanitizeNumber(formData.extraValue),
         gasValue: sanitizeNumber(formData.gasValue),
         enelValue: sanitizeNumber(formData.enelValue),
