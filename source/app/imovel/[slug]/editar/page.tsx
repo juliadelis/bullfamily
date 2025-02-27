@@ -13,9 +13,9 @@ import { registerAction } from "@/components/actionRegister";
 export default function EditEstatePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = use(params);
+  const { slug } = params;
   const [loading, setloading] = useState(true);
 
   useEffect(() => {
