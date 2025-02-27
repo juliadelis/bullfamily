@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 type FinancialRecorMoreEstate = FinancialRecord & {
   estate: Estate | undefined;
+  obs?: string;
 };
 import {
   Table,
@@ -32,6 +33,9 @@ import { isAuthenticated } from "@/utils/isAuthenticated";
 import { redirect } from "next/navigation";
 import "./index.css";
 import { FormatterUtils } from "@/utils/formatter.utils";
+import { IconButton } from "@mui/material";
+import { HiOutlinePencil } from "react-icons/hi2";
+import { FiPlus } from "react-icons/fi";
 
 function capitalizeFirstLetter(str: string) {
   return str.replace(/\b\w/g, (char: string) => char.toUpperCase());
@@ -57,6 +61,12 @@ export default function ItensMesAtrasoRelatorio() {
   const [lateEstates, setLateEstates] = useState<
     FinancialRecorMoreEstate[] | null
   >(null);
+  const [estateObservations, setEstateObservations] = useState<{
+    [key: number]: string;
+  }>({});
+  const [newObservation, setNewObservation] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEstateId, setSelectedEstateId] = useState<number | null>(null);
 
   useEffect(() => {
     const month = new Date().getMonth();
@@ -88,6 +98,30 @@ export default function ItensMesAtrasoRelatorio() {
         setPayments(data);
       });
   }, [estates]);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const fetchData = async () => {
+      const { data: estatesData, error: estatesError } = await supabase
+        .from("late_payment_estates")
+        .select("id, estate_id, obs");
+
+      if (estatesError) {
+        console.error("Erro ao buscar observações:", estatesError);
+        return;
+      }
+
+      const observationsMap: { [key: number]: string } = {};
+      estatesData.forEach((obs) => {
+        observationsMap[obs.estate_id] = obs.obs;
+      });
+
+      setEstateObservations(observationsMap);
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const filteredLate = payments?.map((payment) => {
@@ -133,6 +167,56 @@ export default function ItensMesAtrasoRelatorio() {
 
     return `R$ ${formattedIntegerPart},${decimalPart}`;
   }
+
+  const handleOpenModal = (estateId: number, currentObs: string) => {
+    setSelectedEstateId(estateId);
+    setNewObservation(currentObs);
+    setModalOpen(true);
+  };
+
+  // const saveObservation = async () => {
+  //   if (selectedEstateId === null) return;
+
+  //   const supabase = createClient();
+  //   const { error } = await supabase
+  //     .from("late_payment_estates")
+  //     .upsert([{ estate_id: selectedEstateId, obs: newObservation }], {
+  //       onConflict: "estate_id",
+  //     });
+
+  //   if (error) {
+  //     console.error("Erro ao salvar observação:", error);
+  //     return;
+  //   }
+
+  //   setEstateObservations((prev) => ({
+  //     ...prev,
+  //     [selectedEstateId]: newObservation,
+  //   }));
+
+  //   setModalOpen(false);
+  // };
+
+  const saveObservation = async () => {
+    if (selectedEstateId === null) return;
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("late_payment_estates")
+      .upsert([{ estate_id: selectedEstateId, obs: newObservation }]);
+    if (error) {
+      console.error("Erro ao salvar observação:", error);
+      return;
+    }
+
+    setEstateObservations((prev) => ({
+      ...prev,
+      [selectedEstateId]: newObservation,
+    }));
+
+    setModalOpen(false);
+  };
+
   if (loading) return <Loading />;
   if (!selectedMonth || !selectedYear || !lateEstates) return <Loading />;
 
@@ -190,7 +274,7 @@ export default function ItensMesAtrasoRelatorio() {
                     <TableHead className="font-normal text-black ">
                       Imóvel
                     </TableHead>
-                    <TableHead className="text-left font-normal text-black w-[300px]">
+                    <TableHead className="text-left font-normal text-black w-[200px]">
                       Administração
                     </TableHead>
 
@@ -209,8 +293,12 @@ export default function ItensMesAtrasoRelatorio() {
                     <TableHead className="text-left font-normal text-black w-[200px]">
                       Enel
                     </TableHead>
+
                     <TableHead className="text-left font-normal text-black w-[200px]">
                       Gas
+                    </TableHead>
+                    <TableHead className="text-left font-normal text-black">
+                      Obs
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -309,6 +397,32 @@ export default function ItensMesAtrasoRelatorio() {
                           <br />
                           {item?.gas}
                         </TableCell>
+                        <TableCell className={`font-medium`}>
+                          <div
+                            className={`flex ${
+                              estateObservations[item.estate?.id]
+                                ? "justify-between"
+                                : "justify-end"
+                            }`}>
+                            {estateObservations[item.estate?.id] || ""}
+                            <IconButton
+                              size="small"
+                              onClick={() =>
+                                handleOpenModal(
+                                  item.estate?.id as number,
+                                  estateObservations[
+                                    item.estate?.id as number
+                                  ] || ""
+                                )
+                              }>
+                              {estateObservations[item.estate?.id] ? (
+                                <HiOutlinePencil fontSize="small" />
+                              ) : (
+                                <FiPlus size={12} />
+                              )}
+                            </IconButton>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -318,6 +432,36 @@ export default function ItensMesAtrasoRelatorio() {
           </div>
         </div>
       </div>
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold mb-4">
+              {estateObservations[selectedEstateId || 0]
+                ? "Editar"
+                : "Adicionar"}{" "}
+              Observação
+            </h2>
+            <textarea
+              className="w-full p-2 border rounded"
+              rows={4}
+              value={newObservation}
+              onChange={(e) => setNewObservation(e.target.value)}
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                className="normal-case text-white bg-black text-[12px]"
+                onClick={saveObservation}>
+                Salvar
+              </Button>
+              <Button
+                className="normal-case text-white bg-red-700 text-[12px]"
+                onClick={() => setModalOpen(false)}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
