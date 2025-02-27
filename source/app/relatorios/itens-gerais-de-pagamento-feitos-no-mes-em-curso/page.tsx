@@ -20,7 +20,7 @@ import { LuFileText } from "react-icons/lu";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+
 import { useState, useEffect } from "react";
 import { Estate } from "@/@types/estate";
 import { createClient } from "@/utils/supabase/client";
@@ -35,6 +35,7 @@ import { isAuthenticated } from "@/utils/isAuthenticated";
 import { redirect } from "next/navigation";
 import "./index.css";
 import { FormatterUtils } from "@/utils/formatter.utils";
+import { Button } from "@mui/material";
 
 function capitalizeFirstLetter(str: string) {
   return str.replace(/\b\w/g, (char: string) => char.toUpperCase());
@@ -96,14 +97,15 @@ export default function ItensMesRelatorio() {
     if (!estates || !payments) return;
 
     const filtered = payments
-      ?.filter(
-        (payment) =>
-          payment.month === selectedMonth &&
-          payment.year === selectedYear &&
-          (payment.propertyTaxIPTUValue ||
-            payment.rentValue ||
-            payment.condominium)
-      )
+      ?.filter((payment) => {
+        return (
+          Number(payment.month) === Number(selectedMonth) &&
+          Number(payment.year) === Number(selectedYear) &&
+          (payment.propertyTaxIPTUValue > 0 ||
+            payment.rentValue > 0 ||
+            payment.condominiumValue > 0)
+        );
+      })
       .map((payment) => {
         const estate = estates?.find(
           (estate) => estate.id === payment.estateId
@@ -114,19 +116,17 @@ export default function ItensMesRelatorio() {
     setFilteredEstates(filtered as FinancialRecorMoreEstate[]);
   }, [estates, payments, selectedMonth, selectedYear]);
 
-  function formatMoneyBRL(amount: number | null) {
-    if (amount === 0 || !amount) {
-      return "Valor não inserido";
+  function formatMoneyBRL(amount: number | null | undefined) {
+    // Se o valor for nulo, indefinido ou igual a 0, retorna vazio
+    if (amount === null || amount === undefined || amount <= 0) {
+      return "";
     }
 
-    const [integerPart, decimalPart] = amount.toFixed(2).split(".");
-
-    const formattedIntegerPart = integerPart.replace(
-      /\B(?=(\d{3})+(?!\d))/g,
-      "."
-    );
-
-    return `R$ ${formattedIntegerPart},${decimalPart}`;
+    // Formata o valor para o formato de moeda brasileiro
+    return amount.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   }
 
   if (loading) return <Loading />;
@@ -197,6 +197,9 @@ export default function ItensMesRelatorio() {
                     <TableHead className="text-left font-normal text-black w-[200px]">
                       Condominio
                     </TableHead>
+                    <TableHead className="text-left font-normal text-black w-[200px]">
+                      Ações
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="h-fit overflow-scroll">
@@ -221,11 +224,12 @@ export default function ItensMesRelatorio() {
                             item?.statusPropertyTaxIPTU === "Pago em atraso" ||
                             item?.statusPropertyTaxIPTU === "Não foi pago"
                               ? "text-[#BE1A1A]"
-                              : item?.statusPropertyTaxIPTU === "Pago em dia"
+                              : item?.statusPropertyTaxIPTU === "Pago em dia" ||
+                                item?.statusPropertyTaxIPTU === "Pago adiantado"
                               ? "text-[#1B972F]"
                               : "text-[#CBD5E1]"
                           }`}>
-                          {formatMoneyBRL(Number(item?.estate.taxIPTU))}
+                          {formatMoneyBRL(Number(item?.propertyTaxIPTUValue))}
                           <br />
                           {item?.propertyTaxIPTU}
                         </TableCell>
@@ -234,11 +238,12 @@ export default function ItensMesRelatorio() {
                             item?.statusRent === "Pago em atraso" ||
                             item?.statusRent === "Não foi pago"
                               ? "text-[#BE1A1A]"
-                              : item?.statusRent === "Pago em dia"
+                              : item?.statusRent === "Pago em dia" ||
+                                item?.statusRent === "Pago adiantado"
                               ? "text-[#1B972F]"
                               : "text-[#CBD5E1]"
                           }`}>
-                          {formatMoneyBRL(Number(item?.estate.rentalValue))}
+                          {formatMoneyBRL(Number(item?.condominiumValue))}
                           <br />
                           {item?.rent}
                         </TableCell>
@@ -247,13 +252,22 @@ export default function ItensMesRelatorio() {
                             item?.statusCondominium === "Pago em atraso" ||
                             item?.statusCondominium === "Não foi pago"
                               ? "text-[#BE1A1A]"
-                              : item?.statusCondominium === "Pago em dia"
+                              : item?.statusCondominium === "Pago em dia" ||
+                                item?.statusCondominium === "Pago adiantado"
                               ? "text-[#1B972F]"
                               : "text-[#CBD5E1]"
                           }`}>
-                          {formatMoneyBRL(Number(item?.estate.condominium))}
+                          {formatMoneyBRL(Number(item?.condominiumValue))}
                           <br />
                           {item.condominium}
+                        </TableCell>
+                        <TableCell className="font-medium ">
+                          <Button
+                            href={`/imovel/${item.estate.id}`}
+                            type="text"
+                            className="normal-case underline text-black text-[12px]">
+                            Ver
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );
