@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 
 import { createClient } from "@/utils/supabase/client";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, format, isValid, parseISO } from "date-fns";
 
 import Link from "next/link";
 
@@ -166,6 +166,27 @@ export default function ImoveisVagosRelatorio() {
     return Math.abs(difference);
   };
 
+  const calculateDaysVacant = (unoccupiedDate: string) => {
+    // Verifica se a data é válida e está no formato ISO
+    const date = parseISO(unoccupiedDate);
+
+    if (!isValid(date)) {
+      return "Não existe data de desocupação";
+    }
+
+    // Verifica se a data é 31/12/1969 ou 01/01/1970, o que indica data inválida
+    if (
+      date.getTime() === new Date("1969-12-31").getTime() ||
+      date.getTime() === new Date("1970-01-01").getTime()
+    ) {
+      return "Não existe data de desocupação";
+    }
+
+    // Calcula a diferença em dias
+    const daysVacant = differenceInDays(new Date(), date);
+    return `${daysVacant} dias`;
+  };
+
   const menuItems = [
     { label: "Todos os imóveis", href: "/" },
     { label: "Imóveis vagos", href: "/relatorios/imoveis-vagos" },
@@ -290,7 +311,7 @@ export default function ImoveisVagosRelatorio() {
                         </TableCell>
                         <TableCell className="font-medium">
                           {item.unoccupied &&
-                          item.unoccupied !== new Date("1970-01-01")
+                          item.unoccupied !== new Date("1969-12-31")
                             ? FormatterUtils.formatDate(item.unoccupied)
                             : item.unoccupied === new Date("1970-01-01")
                             ? "Não existe data de desocupação"
@@ -298,9 +319,7 @@ export default function ImoveisVagosRelatorio() {
                         </TableCell>
                         <TableCell className="font-medium text-[#BE1A1A]">
                           {item.unoccupied
-                            ? calculateTimeLeft(
-                                new Date(String(item.endDate))
-                              ) + " dias"
+                            ? calculateDaysVacant(String(item.unoccupied))
                             : "Não existe data de desocupação"}
                         </TableCell>
                         <TableCell className="font-medium">
