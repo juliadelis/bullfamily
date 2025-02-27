@@ -95,14 +95,21 @@ export default function ItensMesRelatorio() {
   useEffect(() => {
     if (!estates || !payments) return;
 
-    const filtered = payments?.map((payment) => {
-      if (payment.month === selectedMonth && payment.year === selectedYear) {
+    const filtered = payments
+      ?.filter(
+        (payment) =>
+          payment.month === selectedMonth &&
+          payment.year === selectedYear &&
+          (payment.propertyTaxIPTUValue ||
+            payment.rentValue ||
+            payment.condominium)
+      )
+      .map((payment) => {
         const estate = estates?.find(
           (estate) => estate.id === payment.estateId
         );
         return { ...payment, estate };
-      }
-    });
+      });
 
     setFilteredEstates(filtered as FinancialRecorMoreEstate[]);
   }, [estates, payments, selectedMonth, selectedYear]);
